@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Bell } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { UserMenu } from "@/components/layout/UserMenu";
 
 interface AppBarProps {
     title?: string;
@@ -54,6 +55,7 @@ export function AppBar({ title, showBack, actions }: AppBarProps) {
                         <Bell className="h-5 w-5" />
                         <span className="sr-only">Notifications</span>
                     </Button>
+                    <UserMenu />
                 </div>
             </div>
         </header>

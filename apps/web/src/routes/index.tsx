@@ -11,8 +11,12 @@ import LandingPage from "@/pages/LandingPage";
 import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
 import TermsOfServicePage from "@/pages/TermsOfServicePage";
 
-// Lazy placeholders for auth routes
-const CompanySetupScreen = () => <div className="p-4">Onboarding Step 1</div>;
+// Onboarding Screens
+import OnboardingFlow from "@/features/onboarding/layout/OnboardingFlow";
+import CompanySetupScreen from "@/features/onboarding/pages/CompanySetupScreen";
+import FirstSearchScreen from "@/features/onboarding/pages/FirstSearchScreen";
+import LeadPreviewScreen from "@/features/onboarding/pages/LeadPreviewScreen";
+import TrialActivationScreen from "@/features/onboarding/pages/TrialActivationScreen";
 
 const router = createBrowserRouter([
     {
@@ -37,11 +41,36 @@ const router = createBrowserRouter([
         element: <LoginScreen />,
     },
     {
-        path: "/onboarding/company",
-        element: <CompanySetupScreen />,
+        path: "/onboarding",
+        element: (
+            <ProtectedRoute>
+                <OnboardingFlow />
+            </ProtectedRoute>
+        ),
+        children: [
+            {
+                index: true,
+                element: <Navigate to="company" replace />, // Default, but ProtectedRoute may override
+            },
+            {
+                path: "company",
+                element: <CompanySetupScreen />,
+            },
+            {
+                path: "search",
+                element: <FirstSearchScreen />,
+            },
+            {
+                path: "preview",
+                element: <LeadPreviewScreen />,
+            },
+            {
+                path: "activate",
+                element: <TrialActivationScreen />,
+            },
+        ],
     },
     {
-        path: "/",
         element: (
             <ProtectedRoute>
                 <AppShell />

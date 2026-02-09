@@ -1,7 +1,12 @@
 
 import { updateUserProfile } from "./users/profile";
+import { createTenant } from "./onboarding/createTenant";
+import { discoverLeads } from "./onboarding/discoverLeads";
+import { activateTrial } from "./onboarding/activateTrial";
 
-export { updateUserProfile };
-
-// Other exports can go below or be imported similarly
-
+export {
+    updateUserProfile,
+    createTenant,
+    discoverLeads,
+    activateTrial
+};
