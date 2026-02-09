@@ -9,6 +9,8 @@ import { toast } from "sonner";
 import { Loader2, Search, ArrowLeft, MapPin } from "lucide-react";
 import { discoverLeadsFn } from "@/lib/api"; // Ensure this matches existing import in FirstSearchScreen
 
+import { getCoordinatesForCity } from "@/utils/locationUtils";
+
 export default function NewSearchScreen() {
     const navigate = useNavigate();
 
@@ -22,20 +24,12 @@ export default function NewSearchScreen() {
         setIsLoading(true);
 
         try {
-            // Mock Geocoding Logic (reused from FirstSearchScreen)
-            // TODO: Move to shared utility
-            let lat = 19.0760; // Mumbai Default
-            let lng = 72.8777;
-
-            const loc = location.toLowerCase();
-            if (loc.includes("pune")) { lat = 18.5204; lng = 73.8567; }
-            if (loc.includes("bangalore")) { lat = 12.9716; lng = 77.5946; }
-            if (loc.includes("delhi")) { lat = 28.7041; lng = 77.1025; }
+            const coordinates = getCoordinatesForCity(location);
 
             // Call Cloud Function (FULL MODE)
             const result: any = await discoverLeadsFn({
                 keyword: keyword,
-                location: { lat, lng },
+                location: coordinates,
                 radius: 5000,
                 preview_mode: false
             });

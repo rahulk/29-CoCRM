@@ -6,7 +6,6 @@ import LeadListScreen from "@/features/leads/pages/LeadListScreen";
 import NewSearchScreen from "@/features/leads/pages/NewSearchScreen";
 import ManualAddLeadScreen from "@/features/leads/pages/ManualAddLeadScreen";
 import LeadDetailScreen from "@/features/leads/pages/LeadDetailScreen";
-import InboxScreen from "@/features/communication/pages/InboxScreen";
 import TaskListScreen from "@/features/tasks/pages/TaskListScreen";
 import LoginScreen from "@/features/auth/pages/LoginScreen";
 import SignUpScreen from "@/features/auth/pages/SignUpScreen";
@@ -22,6 +21,9 @@ import LeadPreviewScreen from "@/features/onboarding/pages/LeadPreviewScreen";
 import TrialActivationScreen from "@/features/onboarding/pages/TrialActivationScreen";
 import IntegrationsScreen from "@/features/settings/pages/IntegrationsScreen";
 import IntegrationsCallback from "@/features/settings/pages/IntegrationsCallback";
+import { InboxScreen } from "@/features/messaging/pages/InboxScreen";
+import { ConversationScreen } from "@/features/messaging/pages/ConversationScreen";
+import { NotificationsScreen } from "@/features/notifications/pages/NotificationsScreen";
 import ReviewsScreen from "@/features/reputation/pages/ReviewsScreen";
 
 const router = createBrowserRouter([
@@ -104,10 +106,6 @@ const router = createBrowserRouter([
                 element: <LeadDetailScreen />,
             },
             {
-                path: "messages",
-                element: <InboxScreen />,
-            },
-            {
                 path: "tasks",
                 element: <TaskListScreen />,
             },
@@ -130,6 +128,18 @@ const router = createBrowserRouter([
             {
                 path: "settings/integrations/callback",
                 element: <IntegrationsCallback />,
+            },
+            {
+                path: "messages",
+                element: <InboxScreen />,
+            },
+            {
+                path: "messages/:leadId",
+                element: <ConversationScreen />,
+            },
+            {
+                path: "notifications",
+                element: <NotificationsScreen />,
             },
         ],
     },

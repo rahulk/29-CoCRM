@@ -5,6 +5,10 @@ import { activateTrial } from "./onboarding/activateTrial";
 import { enrichLeads } from "./leads/enrichLeads";
 import { handleApifyWebhook } from "./leads/handleApifyWebhook";
 import { scoreLead } from "./leads/scoreLead";
+import { checkDueTasks } from "./tasks/checkDueTasks";
+import { sendWhatsapp } from "./messaging/sendWhatsapp";
+import { handleInboundMessage } from "./messaging/handleInboundMessage";
+import { aiReply } from "./messaging/aiReply";
 
 export {
     updateUserProfile,
@@ -13,7 +17,11 @@ export {
     activateTrial,
     enrichLeads,
     handleApifyWebhook,
-    scoreLead
+    scoreLead,
+    checkDueTasks,
+    sendWhatsapp,
+    handleInboundMessage,
+    aiReply
 };
 
 export * from "./integrations/gmb/connectGMB";

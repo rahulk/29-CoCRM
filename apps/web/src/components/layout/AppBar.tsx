@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Bell } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 import { UserMenu } from "@/components/layout/UserMenu";
 
 interface AppBarProps {
@@ -52,10 +52,7 @@ export function AppBar({ title, showBack, actions }: AppBarProps) {
                 <div className="flex-1 font-semibold">{getPageTitle()}</div>
                 <div className="flex items-center gap-2">
                     {actions}
-                    <Button variant="ghost" size="icon" onClick={() => navigate("/notifications")}>
-                        <Bell className="h-5 w-5" />
-                        <span className="sr-only">Notifications</span>
-                    </Button>
+                    <NotificationBell />
                     <UserMenu />
                 </div>
             </div>

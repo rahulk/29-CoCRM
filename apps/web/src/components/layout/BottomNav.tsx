@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ListChecks, MessageSquare, Users2, Star } from "lucide-react";
+import { Home, Users, CheckSquare, Settings, Star, MessageSquare } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export function BottomNav() {
@@ -9,11 +9,21 @@ export function BottomNav() {
 
     const isActive = (path: string) => location.pathname.startsWith(path);
 
-    const tabs = [
+    const navItems = [
+        {
+            label: "Home",
+            path: "/leads",
+            icon: Home,
+        },
+        {
+            label: "Tasks",
+            path: "/tasks",
+            icon: CheckSquare,
+        },
         {
             label: "Leads",
-            path: "/leads",
-            icon: Users2,
+            path: "/leads/search",
+            icon: Users,
         },
         {
             label: "Messages",
@@ -21,21 +31,21 @@ export function BottomNav() {
             icon: MessageSquare,
         },
         {
-            label: "Tasks",
-            path: "/tasks",
-            icon: ListChecks,
-        },
-        {
             label: "Reputation",
             path: "/reviews",
             icon: Star,
+        },
+        {
+            label: "Settings",
+            path: "/settings",
+            icon: Settings,
         },
     ];
 
     return (
         <nav className="fixed bottom-0 z-50 w-full border-t bg-background">
             <div className="container flex h-16 items-center justify-around px-4">
-                {tabs.map((tab) => (
+                {navItems.map((tab) => (
                     <Button
                         key={tab.path}
                         variant="ghost"
