@@ -258,6 +258,14 @@ const update = {
 
 No hard deletes. Use `is_archived: true`.
 
+### B14. Dependency Management (Latest Stable)
+
+* **Mandatory:** Always use the **latest stable version** (`latest` tag) of all dependencies and tools at the start of the project.
+* **Prohibited:** Do not use deprecated, beta, or alpha versions unless explicitly authed by the user.
+* **Locking:** Once installed, commit `package-lock.json` / `pnpm-lock.yaml` to pin versions for consistency.
+* **Updates:** Check for updates only when starting a new major phase or if a critical bug/security fix is released.
+* **Rationale:** Prevent immediate technical debt. We want the codebase to be fresh and supported for as long as possible.
+
 ---
 
 ## PART C: BUILD SEQUENCE

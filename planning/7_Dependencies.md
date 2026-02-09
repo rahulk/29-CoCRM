@@ -1,13 +1,15 @@
 # Tech Stack & Dependencies
 
-**Frontend Framework:** React 18+ with TypeScript
-**Build Tool:** Vite 5+
-**State Management:** React Query v5 (TanStack Query) + Zustand
-**Backend CRUD:** Firebase Cloud Functions (Node 20, TypeScript)
-**Backend AI:** Python Cloud Run (FastAPI)
+> **Note:** All dependencies and tools listed below MUST use their **latest stable version** unless a specific version is pinned. Always prefer the most recent supported release to minimize technical debt.
+
+**Frontend Framework:** React 18+ (Latest Stable) with TypeScript
+**Build Tool:** Vite 5+ (Latest Stable)
+**State Management:** React Query v5+ (Latest Stable) + Zustand
+**Backend CRUD:** Firebase Cloud Functions (Node 20 LTS, TypeScript)
+**Backend AI:** Python Cloud Run (FastAPI, Python 3.11+)
 **Database:** Firestore
 **Hosting:** Firebase Hosting (SPA + PWA)
-**Styling:** Tailwind CSS + shadcn/ui
+**Styling:** Tailwind CSS + shadcn/ui (Latest Stable)
 
 ## 1. Frontend Dependencies (`apps/web/package.json`)
 
