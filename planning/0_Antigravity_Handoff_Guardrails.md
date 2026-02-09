@@ -26,7 +26,7 @@ Account deletion workflow, deep link config files (assetlinks.json / apple-app-s
 * **MVP AI does not auto-send.** For inbound messages, AI generates **draft_reply only**, user must approve.
 * **Opt-out compliance:** if lead `opt_in_status == "opted_out"`, block ALL future outbound. Safety layer must output `BLOCKED: opted_out`.
 * **Quiet hours:** messages are queued (not sent) between 9 PMâ€“9 AM in the **tenant's configured timezone** (`config.timezone`).
-* **Daily cap:** enforce `usage_current.whatsapp_sent_today` against `usage_limits.max_whatsapp_msgs_daily`.
+* **Daily cap:** enforce `usage_current.whatsapp_sent_today` against `usage_limits.max_whatsapp_msgs_daily`. (See Doc 28 for Rate Limits)
 * **Never invent prices/offers:** replies must only quote from Products catalog / brochure PDF context.
 
 ### A4. Billing & Money Correctness (Must Be Atomic)
@@ -213,7 +213,7 @@ export interface Lead {
 throw new HttpsError('failed-precondition', 'Insufficient credits.');
 ```
 
-**React Client â€” use shared error mapper:**
+**React Client â€” use shared error mapper (See Doc 27 for full registry):**
 ```typescript
 // In Mutation
 onError: (error) => {

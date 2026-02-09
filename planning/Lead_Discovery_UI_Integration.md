@@ -110,12 +110,13 @@ await activateTrial();
 
 ## App Check Integration
 
-### Debug Mode Setup (Development)
+### Debug Mode Setup (Development against Cloud)
 1. **Enable App Check in firebase.ts:**
 ```typescript
 // src/lib/firebase.ts
 if (import.meta.env.DEV) {
-  self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+  // Use a fixed debug token for localhost development
+  self.FIREBASE_APPCHECK_DEBUG_TOKEN = import.meta.env.VITE_FIREBASE_APP_CHECK_DEBUG_TOKEN;
 }
 initializeAppCheck(app, {
   provider: new ReCaptchaEnterpriseProvider('recaptcha-site-key'),
@@ -123,14 +124,16 @@ initializeAppCheck(app, {
 });
 ```
 
-2. **Get Debug Token:**
-   - Run the app on an emulator/device
-   - Check logcat/console for: `Enter this debug token into the Firebase Console: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX`
+2. **Generate Debug Token:**
+   - In your browser console (localhost), look for: `App Check debug token: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX`.
+   - Copy this token.
 
-3. **Register Token:**
-   - Firebase Console > Build > App Check > Apps
-   - Select your app > Manage debug tokens
-   - Add the token from logs
+3. **Register Token in Firebase Console:**
+   - **Build > App Check > Apps**.
+   - Select your web app.
+   - Click the **kebab menu (three dots)** > **Manage debug tokens**.
+   - Add the token you copied.
+   - **Important:** This allows `localhost` requests to access your real `cocrm-dev` resources.
 
 ### Production Mode (firebase.ts)
 ```typescript
@@ -190,7 +193,7 @@ Message: "Preview searches exhausted. Activate trial."
 ### Prerequisites
 - [ ] Firebase project created
 - [ ] App Check enabled for your platform
-- [ ] Debug token registered (for emulator testing)
+- [ ] Debug token registered (for localhost testing against Cloud)
 - [ ] Secrets configured (can use placeholders for UI testing)
 
 ### Test Flow
