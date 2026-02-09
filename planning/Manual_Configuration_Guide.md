@@ -178,4 +178,13 @@ firebase functions:secrets:set GOOGLE_MAPS_API_KEY --project cocrm-dev
 3. Generate assets (favicon.ico, apple-touch-icon, android-chrome-192x192, etc.).
 4. Replace files in `apps/web/public/`.
 
+### 8.2 Firestore Config (Force Update)
+1. In Firestore Console, create collection `system_config_public` (if not exists).
+2. Create document `app_settings`.
+3. Add fields:
+   * `min_app_version`: "1.0.0"
+   * `latest_app_version`: "1.0.0"
+   * `maintenance_mode`: false
+
+
 ---

@@ -49,6 +49,7 @@
 | 0.12 | **Landing Page** — Route: `/`. Hero section (headline, subheadline, CTA), Features grid (3 cards mapping to 3 tabs), How It Works (3 steps), Pricing section (trial CTA), Footer with legal links. Version badge (`VITE_APP_VERSION`). SEO meta tags. "Get Started Free" → `/login`. | Doc 22 §2 |
 | 0.13 | **Privacy Policy + Terms of Service** — Routes: `/privacy`, `/terms`. Static pages with legal content. Required for Google OAuth consent screen approval. Linked from landing page footer and login page. | Doc 22 §1 |
 | 0.14 | **Login Page ↔ Landing Page Link** — Add "Back to Home" link on LoginScreen. Add version display at bottom of LoginScreen. Ensure smooth navigation between `/` → `/login` → onboarding flow. | Doc 22 §3 |
+| 0.15 | **Database Seeding** — `scripts/seed_firestore.ts` script. Populates initial `products` (PLG tiers), `system_config` (public settings). Run via `npm run seed:dev`. | Doc 26 |
 
 ### Acceptance Criteria
 
@@ -261,7 +262,7 @@
 | 5.3 | **Permission Editor** — Toggle switches per team member for module-level permissions. `updateUserPermissions` CF. Frontend `usePermissions()` hook for conditional UI rendering. | Doc 21 §9 |
 | 5.4 | **WhatsAppSetupScreen** — Configuration for WhatsApp Business phone number. Connect/disconnect flow. Display `config.whatsapp_phone_id`. | Doc 16 §7.4 |
 | 5.5 | **ProductCatalogScreen + AddProductScreen** — CRUD for `products` collection. Fields: name, description, price, category. Used by AI reply for context (never invent prices). | Doc 16 §7.5–§7.6 |
-| 5.6 | **BrochureUploadScreen** — Upload PDF to Firebase Storage. Triggers `indexBrochure` CF which calls Python `POST /embed-text` for RAG vectorization. Stored in `brochure_vectors` collection. | Doc 16 §7.7, Doc 3 §6.3 |
+| 5.6 | **BrochureListScreen** — List uploaded brochures. Upload dialog triggers `indexBrochure`. Delete action triggers `deleteBrochure`. Status indicators (indexing/ready/failed). | Doc 16 §7.7–§7.8, Doc 3 §6.3–§6.4 |
 | 5.7 | **`updateTenantProfile` CF** — Edit company name, city from Settings. Writes to `tenants` doc (which is write-locked to super_admin in security rules, so CF acts as controlled proxy). Creates `activity_logs` entry. | Doc 3 §1.2 |
 
 ### Acceptance Criteria
@@ -274,7 +275,7 @@
 | 5-AC4 | **Permissions enforced** | Setting `leads_export: false` on a sales_rep hides the Export button. Setting `billing_view: false` hides the Billing menu. Backend CF also enforces (not just UI). |
 | 5-AC5 | **Admin can't edit own permissions** | `updateUserPermissions` rejects requests where caller edits their own permissions. |
 | 5-AC6 | **Product catalog CRUD** | Admin can add/edit/delete products. Products appear in `products` collection with audit fields. |
-| 5-AC7 | **Brochure upload + indexing** | Uploading a PDF triggers `indexBrochure`. Vectors stored in `brochure_vectors`. AI reply can reference brochure content in draft responses. |
+| 5-AC7 | **Brochure management** | Admin can upload brochure (status: indexing -> ready). Admin can delete brochure (removes doc + vectors + file). |
 | 5-AC8 | **Tenant profile edit** | Changing company name/city via Settings calls `updateTenantProfile` CF. Firestore updated. Activity log entry created. |
 | 5-AC9 | **Invitation expiry** | Invitation with `expires_at` in the past is rejected on `/join`. Shows "Invitation expired" message. |
 

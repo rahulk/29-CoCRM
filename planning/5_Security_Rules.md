@@ -229,8 +229,15 @@ service cloud.firestore {
     }
 
     // =========================================================
-    // 9. BROCHURE VECTORS (RAG Pipeline)
+    // 9. BROCHURES & VECTORS (RAG Pipeline)
     // =========================================================
+    match /brochures/{brochureId} {
+      // Read: Tenant users
+      allow read: if request.auth != null && (belongsToTenant(resource.data) || isSuperAdmin());
+      // Write: Server-side only (indexBrochure CF)
+      allow write: if false;
+    }
+
     match /brochure_vectors/{vectorId} {
       // Read: Tenant users (for AI context display, if needed)
       allow read: if request.auth != null && (belongsToTenant(resource.data) || isSuperAdmin());

@@ -81,7 +81,7 @@
 | `/settings/whatsapp`         | WhatsAppSetupScreen     | Yes           | tenant_admin       |
 | `/settings/products`         | ProductCatalogScreen    | Yes           | tenant_admin       |
 | `/settings/products/add`     | AddProductScreen        | Yes           | tenant_admin       |
-| `/settings/brochures`        | BrochureUploadScreen    | Yes           | tenant_admin       |
+| `/settings/brochures`        | BrochureListScreen      | Yes           | tenant_admin       |
 | `/admin`                     | AdminDashboardScreen    | Yes           | super_admin        |
 | `/admin/tenants/:id`         | TenantDetailScreen      | Yes           | super_admin        |
 | `/admin/logs`                | SystemLogsScreen        | Yes           | super_admin        |
@@ -245,8 +245,22 @@ Connect/Disconnect WhatsApp via Meta flow.
 ### 7.5 ProductCatalogScreen & 7.6 AddProductScreen
 Manage `products` collection.
 
-### 7.7 BrochureUploadScreen
-Upload PDFs to Firebase Storage.
+### 7.7 BrochureListScreen
+**Route:** `/settings/brochures`
+**Purpose:** Manage RAG knowledge base.
+**Layout:**
+* **List:** Table of brochures (Filename, Status, Uploaded At, Actions).
+* **Status:** "Indexing..." (spinner), "Ready" (green check), "Failed" (red x).
+* **Actions:** "Delete" (trash icon) -> calls `deleteBrochure`.
+* **Header:** "Upload Brochure" button -> opens `BrochureUploadDialog`.
+
+### 7.8 BrochureUploadDialog (Component)
+**Purpose:** Upload PDF to Storage.
+**Behavior:**
+* File picker (PDF only, max 10MB).
+* Uploads to `gs://{bucket}/{tenant_id}/brochures/{filename}`.
+* On success: Close dialog. `indexBrochure` CF triggers automatically.
+* UI optimistically adds row or re-fetches list.
 
 ---
 

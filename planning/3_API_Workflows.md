@@ -23,6 +23,7 @@
 | validateInvitation | §10.2 | This doc |
 | assignTenantOnSignup | §10.3 | This doc |
 | removeUser | §10.4 | This doc |
+| deleteBrochure | §6.4 | This doc |
 | deleteAccount | §12 | This doc | (Phase 2 — stub only) |
 | updateUserProfile | §13 | This doc |
 | logLoginEvent | §14 | This doc |
@@ -52,6 +53,7 @@ The following AI-heavy operations run as a **Python Cloud Run** service (`ai-ser
 **Python Cloud Run service endpoints:**
 - `POST /score-lead` — Accepts lead data, returns `{ qualification_score, tag, reasoning }`
 - `POST /ai-reply` — Accepts conversation history + RAG context + tenant config, returns `{ draft_text, safety_status }`
+- `POST /embed-text` — Accepts text chunks, returns embedding vectors
 - `GET /health` — Health check
 
 ### 0.X Audit Fields (All Cloud Functions)
@@ -608,6 +610,51 @@ Before processing, query `credit_transactions` where `idempotency_key == "razorp
 **Error handling:** If PDF parsing fails, log to `system_logs` and skip indexing. File remains in Storage but won't be searchable by AI.
 
 **Note:** `aiReply` (§5) should update its "Vector Search" step to query `brochure_vectors` where `tenant_id` matches, using Firestore's `findNearest()` vector search.
+
+## 6.3 Brochure Indexing (Cloud Function: `indexBrochure`)
+
+**Trigger:** Firebase Storage `onFinalize` — fires when a file is uploaded to `{tenant_id}/brochures/*`.
+
+**Logic:**
+1. **Initialize Metadata:** Create `brochures/{auto_id}` doc with `status: "indexing"`, `filename`, `url`, `tenant_id`.
+2. **Extract text:** Download PDF from Storage. Use a PDF parsing library (e.g., `pdf-parse` for Node.js) to extract text content.
+3. **Chunk text:** Split extracted text into chunks of ~500 tokens with 50-token overlap.
+4. **Generate embeddings:** Call the Python Cloud Run service `POST /embed-text` endpoint.
+5. **Store vectors:** Batch write to `brochure_vectors`:
+   - `tenant_id`, `filename`, `chunk_index`, `text`, `embedding`.
+6. **Update Metadata:** Update `brochures/{doc_id}`:
+   - `status: "ready"`.
+   - `chunk_count`: total chunks.
+   - `updated_at`: now.
+
+**Error handling:**
+- If parsing/embedding fails, update `brochures/{doc_id}` with `status: "failed"`, `error_message`.
+- Do NOT delete the file from Storage (let user retry or delete).
+
+---
+
+## 6.4 Delete Brochure (Cloud Function: `deleteBrochure`)
+
+**Trigger:** Callable. Tenant admin clicks "Delete" on BrochureListScreen.
+
+**Input Payload:**
+```json
+{
+  "brochure_id": "doc_id_123",
+  "filename": "rate_card.pdf"
+}
+```
+
+**Auth Check:** Tenant Admin.
+
+**Logic:**
+1. **Get Brochure:** Read `brochures/{brochure_id}`. Verify `tenant_id`.
+2. **Delete Vectors:** Query `brochure_vectors` where `tenant_id == tid` AND `filename == doc.filename`. Batch delete all.
+3. **Delete File:** Delete `gs://bucket/{tenant_id}/brochures/{filename}`.
+4. **Delete Metadata:** Delete `brochures/{brochure_id}`.
+5. **Log Activity:** `activity_logs` entry: `brochure_deleted`.
+
+**Return:** `{ success: true }`
 
 ---
 

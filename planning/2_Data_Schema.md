@@ -317,7 +317,23 @@
 
 
 
-## 7.3 Collection: `login_history` (Root Level)
+## 7.3 Collection: `brochures` (Root Level)
+
+* **Purpose:** Metadata for uploaded PDFs (RAG Knowledge Base). Created by `indexBrochure` Cloud Function.
+* **Document ID:** Auto-ID.
+* **Fields:**
+    * `tenant_id` (String): **Foreign Key.**
+    * `filename` (String): "rate_card_2025.pdf".
+    * `url` (String): Firebase Storage download URL.
+    * `status` (String): "indexing", "ready", "failed".
+    * `error_message` (String, Optional).
+    * `chunk_count` (Number): Number of vectors generated.
+    * `created_at` (Timestamp).
+    * `created_by` (String).
+    * `updated_at` (Timestamp).
+    * `updated_by` (String).
+
+## 7.4 Collection: `login_history` (Root Level)
 
 * **Purpose:** Audit trail of every authentication event.
 * **Document ID:** Auto-ID.
@@ -359,6 +375,23 @@
     * `user_id` (String).
     * `user_name` (String, denormalized).
     * `action` (String): "lead_created", "lead_archived", "lead_exported", "whatsapp_sent", "team_invited", "team_removed", "settings_updated", "product_added", "brochure_uploaded", "permissions_changed".
+    * `entity_type` (String): "lead", "product", "user", "tenant", "brochure".
+    * `entity_id` (String).
+    * `entity_name` (String, denormalized).
+    * `details` (Map, optional).
+    * `created_at` (Timestamp).
+    * `created_by` (String).
+
+
+## 7.6 Collection: `activity_logs` (Root Level)
+
+* **Purpose:** Tenant-scoped audit trail of significant user actions.
+* **Document ID:** Auto-ID.
+* **Fields:**
+    * `tenant_id` (String).
+    * `user_id` (String).
+    * `user_name` (String, denormalized).
+    * `action` (String): "lead_created", "lead_archived", "lead_exported", "whatsapp_sent", "team_invited", "team_removed", "settings_updated", "product_added", "brochure_uploaded", "brochure_deleted", "permissions_changed".
     * `entity_type` (String): "lead", "product", "user", "tenant", "brochure".
     * `entity_id` (String).
     * `entity_name` (String, denormalized).
