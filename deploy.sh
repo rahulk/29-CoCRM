@@ -38,6 +38,11 @@ check_dependencies() {
 
 bump_version() {
     local bump_type=$1
+    
+    if [ "$bump_type" == "none" ]; then
+        return
+    fi
+
     log_info "Bumping $bump_type version..."
     
     # Bump version in root package.json if it exists, or create a dummy one for tracking
@@ -47,16 +52,28 @@ bump_version() {
     
     npm version $bump_type --no-git-tag-version
     
-    # Extract new version
-    NEW_VERSION=$(node -p "require('./package.json').version")
-    log_info "New version: $NEW_VERSION"
+    local new_version=$(node -p "require('./package.json').version")
+    log_info "New version: $new_version"
+}
+
+sync_version() {
+    local target_env=$1
+    local current_version=$(node -p "require('./package.json').version")
     
-    # Update version in web app .env files
-    # Note: We don't commit these changes automatically to allow for manual review if needed
-    if [ "$ENV_TARGET" == "dev" ]; then
-        sed -i '' "s/VITE_APP_VERSION=.*/VITE_APP_VERSION=$NEW_VERSION/" apps/web/.env
+    log_info "Syncing version $current_version to .env for $target_env..."
+
+    if [ "$target_env" == "dev" ]; then
+        if [ -f apps/web/.env ]; then
+            sed -i '' "s/VITE_APP_VERSION=.*/VITE_APP_VERSION=$current_version/" apps/web/.env
+        else
+            log_warn "apps/web/.env not found, skipping version sync."
+        fi
     else
-        sed -i '' "s/VITE_APP_VERSION=.*/VITE_APP_VERSION=$NEW_VERSION/" apps/web/.env.production
+        if [ -f apps/web/.env.production ]; then
+            sed -i '' "s/VITE_APP_VERSION=.*/VITE_APP_VERSION=$current_version/" apps/web/.env.production
+        else
+            log_warn "apps/web/.env.production not found, skipping version sync."
+        fi
     fi
 }
 
@@ -83,6 +100,8 @@ deploy_dev() {
     firebase deploy --project $DEV_PROJECT --only hosting:dev,functions,firestore,storage
     
     log_info "Deployment to DEV complete!"
+    local current_version=$(node -p "require('./package.json').version")
+    log_info "Deployed Version: v$current_version"
 }
 
 deploy_prod() {
@@ -114,21 +133,23 @@ deploy_prod() {
     firebase deploy --project $PROD_PROJECT --only hosting:prod,functions,firestore,storage
     
     log_info "Deployment to PROD complete!"
+    local current_version=$(node -p "require('./package.json').version")
+    log_info "Deployed Version: v$current_version"
 }
 
 # --- Main Script ---
 
 check_dependencies
 
-if [ "$#" -ne 2 ]; then
-    echo "Usage: $0 <environment> <version_bump>"
+if [ "$#" -lt 1 ]; then
+    echo "Usage: $0 <environment> [version_bump]"
     echo "Environments: dev, prod"
-    echo "Version Bump: patch, minor, major, none"
+    echo "Version Bump (Optional): patch, minor, major, none (default: none)"
     exit 1
 fi
 
 ENV_TARGET=$1
-BUMP_TYPE=$2
+BUMP_TYPE=${2:-none}
 
 # Validate Environment
 if [[ "$ENV_TARGET" != "dev" && "$ENV_TARGET" != "prod" ]]; then
@@ -143,9 +164,10 @@ if [[ "$BUMP_TYPE" != "patch" && "$BUMP_TYPE" != "minor" && "$BUMP_TYPE" != "maj
 fi
 
 # Execute Version Bump
-if [ "$BUMP_TYPE" != "none" ]; then
-    bump_version $BUMP_TYPE
-fi
+bump_version $BUMP_TYPE
+
+# Sync Version to Target Env
+sync_version $ENV_TARGET
 
 # Execute Deployment
 if [ "$ENV_TARGET" == "dev" ]; then

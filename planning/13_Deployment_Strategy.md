@@ -1,4 +1,4 @@
-# Build, Deployment & DevOps Strategy
+ # Build, Deployment & DevOps Strategy
 
 **Goal:** Zero-friction deployment. Separate environments for dev and production.
 **Principle:** "One Command" to build and deploy each component.
@@ -31,22 +31,16 @@ VITE_APP_VERSION=1.0.0
 VITE_RECAPTCHA_SITE_KEY=6Le...dev
 ```
 
-**Build commands:**
-- Dev: `npm run dev` (Vite dev server with HMR)
-- Prod build: `npm run build` (outputs to `dist/`)
-
 ## 3. Deployment Scripts
 
-### A. Frontend (React PWA to Firebase Hosting)
+### A. Unified Deployment Script
 
 ```bash
-# Deploy dev
-cd apps/web && npm run build -- --mode development
-firebase deploy --only hosting:dev --project cocrm-dev-project
+# Deploy to DEV (bumps version)
+./deploy.sh dev patch
 
-# Deploy prod
-cd apps/web && npm run build -- --mode production
-firebase deploy --only hosting:prod --project cocrm-prod-project
+# Deploy to PROD (uses current version, no bump)
+./deploy.sh prod
 ```
 
 ### B. Cloud Functions (Node/TS)

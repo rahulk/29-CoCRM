@@ -1,10 +1,7 @@
 
-import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
+import { updateUserProfile } from "./users/profile";
 
-admin.initializeApp();
+export { updateUserProfile };
 
-// Export all triggers
-export const healthCheck = functions.https.onRequest((request, response) => {
-    response.send("OK");
-});
+// Other exports can go below or be imported similarly
+

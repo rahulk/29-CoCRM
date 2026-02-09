@@ -1,11 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.healthCheck = void 0;
-const functions = require("firebase-functions");
-const admin = require("firebase-admin");
-admin.initializeApp();
-// Export all triggers
-exports.healthCheck = functions.https.onRequest((request, response) => {
-    response.send("OK");
-});
+exports.updateUserProfile = void 0;
+const profile_1 = require("./users/profile");
+Object.defineProperty(exports, "updateUserProfile", { enumerable: true, get: function () { return profile_1.updateUserProfile; } });
+// Other exports can go below or be imported similarly
 //# sourceMappingURL=index.js.map
