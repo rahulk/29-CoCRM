@@ -3,15 +3,18 @@ import { AppShell } from "@/components/layout/AppShell";
 import { ProtectedRoute } from "@/components/layout/ProtectedRoute";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import LeadListScreen from "@/features/leads/pages/LeadListScreen";
+import NewSearchScreen from "@/features/leads/pages/NewSearchScreen";
+import ManualAddLeadScreen from "@/features/leads/pages/ManualAddLeadScreen";
+import LeadDetailScreen from "@/features/leads/pages/LeadDetailScreen";
 import InboxScreen from "@/features/communication/pages/InboxScreen";
 import TaskListScreen from "@/features/tasks/pages/TaskListScreen";
 import LoginScreen from "@/features/auth/pages/LoginScreen";
-import ProfileScreen from "@/features/auth/pages/ProfileScreen";
+import SignUpScreen from "@/features/auth/pages/SignUpScreen";
 import LandingPage from "@/pages/LandingPage";
+import ProfileScreen from "@/features/settings/pages/ProfileScreen";
 import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
 import TermsOfServicePage from "@/pages/TermsOfServicePage";
-
-// Onboarding Screens
+import SettingsScreen from "@/features/settings/pages/SettingsScreen";
 import OnboardingFlow from "@/features/onboarding/layout/OnboardingFlow";
 import CompanySetupScreen from "@/features/onboarding/pages/CompanySetupScreen";
 import FirstSearchScreen from "@/features/onboarding/pages/FirstSearchScreen";
@@ -39,6 +42,10 @@ const router = createBrowserRouter([
     {
         path: "/login",
         element: <LoginScreen />,
+    },
+    {
+        path: "/signup",
+        element: <SignUpScreen />,
     },
     {
         path: "/onboarding",
@@ -82,6 +89,18 @@ const router = createBrowserRouter([
                 element: <LeadListScreen />,
             },
             {
+                path: "leads/search",
+                element: <NewSearchScreen />,
+            },
+            {
+                path: "leads/add",
+                element: <ManualAddLeadScreen />,
+            },
+            {
+                path: "leads/:id",
+                element: <LeadDetailScreen />,
+            },
+            {
                 path: "messages",
                 element: <InboxScreen />,
             },
@@ -92,6 +111,10 @@ const router = createBrowserRouter([
             {
                 path: "profile",
                 element: <ProfileScreen />,
+            },
+            {
+                path: "settings",
+                element: <SettingsScreen />,
             },
         ],
     },

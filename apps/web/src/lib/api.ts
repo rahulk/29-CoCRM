@@ -5,6 +5,7 @@ export interface CreateTenantPayload {
     company_name: string;
     city: string;
     admin_name: string;
+    business_type: 'b2b_product' | 'b2c_product' | 'b2b_service' | 'b2c_service';
 }
 
 export interface DiscoverLeadsPayload {

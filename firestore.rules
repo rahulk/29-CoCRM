@@ -66,7 +66,15 @@ service cloud.firestore {
       
       // ONLY Super Admin can WRITE (Change plan, add credits)
       // This prevents a tenant from hacking their own credit balance.
-      allow write: if isSuperAdmin();
+      // ONLY Super Admin can WRITE (Change plan, add credits)
+      // Exception: Tenant Admin can update 'config' (quick replies, business settings)
+      allow update: if request.auth != null 
+        && request.auth.token.role == 'tenant_admin'
+        && request.auth.token.tenant_id == tenantId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['config', 'updated_at', 'updated_by'])
+        && hasAuditFieldsOnUpdate();
+
+      allow create, delete: if isSuperAdmin();
 
       // Subcollection: Search Grids
       match /search_grids/{gridId} {

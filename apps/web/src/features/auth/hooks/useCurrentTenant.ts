@@ -11,6 +11,18 @@ interface Tenant {
     onboarding_step: string;
     usage_current: any;
     usage_limits: any;
+    config?: {
+        target_city?: string;
+        business_type?: string;
+        health_thresholds?: {
+            green_days: number;
+            yellow_days: number;
+        };
+        quick_replies?: Array<{
+            label: string;
+            message: string;
+        }>;
+    };
 }
 
 export function useCurrentTenant() {

@@ -45,6 +45,48 @@ export const createTenant = onCall({ region: "asia-south1" }, async (request) =>
     const tenantId = tenantRef.id;
 
     const now = FieldValue.serverTimestamp();
+    const business_type = request.data.business_type || 'b2c_product'; // Default fallback
+
+    // Default configuration based on business type
+    const getDefaults = (type: string) => {
+        switch (type) {
+            case 'b2b_product': // e.g. Furniture Wholesaler
+                return {
+                    health_thresholds: { green_days: 30, yellow_days: 60 }, // Long cycle
+                    quick_replies: [
+                        { label: 'Product Catalog', message: 'Hi! Here is our latest product catalog: [LINK]. Let me know if you need bulk pricing.' },
+                        { label: 'Follow Up', message: 'Hi! Just checking if you had a chance to review the catalog? We have stock available.' }
+                    ]
+                };
+            case 'b2c_service': // e.g. Gym/Coaching
+                return {
+                    health_thresholds: { green_days: 7, yellow_days: 14 }, // Short cycle (urgency)
+                    quick_replies: [
+                        { label: 'Trial Offer', message: 'Hi! We have a free trial class this week. Would you like to book a slot?' },
+                        { label: 'Pricing Info', message: 'Hi! Here are our membership packages: [LINK]. We have a 10% discount valid until Sunday.' }
+                    ]
+                };
+            case 'b2b_service': // e.g. Agency
+                return {
+                    health_thresholds: { green_days: 14, yellow_days: 45 },
+                    quick_replies: [
+                        { label: 'Service Deck', message: 'Hi! Here is our capability deck: [LINK]. When is a good time to discuss?' },
+                        { label: 'Meeting Request', message: 'Hi! Are you free for a quick 10min call tomorrow to discuss your requirements?' }
+                    ]
+                };
+            case 'b2c_product': // e.g. Retail Store
+            default:
+                return {
+                    health_thresholds: { green_days: 7, yellow_days: 30 },
+                    quick_replies: [
+                        { label: 'New Arrival', message: 'Hi! We just got some new stock you might like. Check it out here: [LINK]' },
+                        { label: 'Sale Alert', message: 'Hi! We are running a 20% off sale this weekend. Hope to see you!' }
+                    ]
+                };
+        }
+    };
+
+    const defaults = getDefaults(business_type);
 
     const tenantData = {
         company_name: company_name.trim(),
@@ -52,6 +94,9 @@ export const createTenant = onCall({ region: "asia-south1" }, async (request) =>
         credits_balance: 0,
         config: {
             target_city: city.trim(),
+            business_type: business_type,
+            health_thresholds: defaults.health_thresholds,
+            quick_replies: defaults.quick_replies
         },
         usage_limits: {
             max_leads_per_month: 1000,

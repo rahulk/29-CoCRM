@@ -1,53 +1,48 @@
-import { useQuery } from "@tanstack/react-query";
-import { collection, query, where, orderBy, getDocs, limit } from "firebase/firestore";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { collection, query, where, orderBy, getDocs, limit, startAfter, QueryDocumentSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/features/auth/context/AuthContext";
+import type { Lead } from "../types";
 
-// Define Lead Interface (Partial)
-export interface Lead {
-    id: string;
-    business_details: {
-        name: string;
-        address: string;
-        phone: string;
-        website: string;
-        rating?: number;
-        review_count?: number;
-    };
-    contact_details: {
-        email?: string;
-        social?: any;
-    };
-    status: string;
-    enrichment_status: string;
-    created_at: any;
-}
+const LEADS_PER_PAGE = 20;
 
-export function useLeads(params?: { limit?: number }) {
+export function useLeads(params?: { status?: string }) {
     const { claims } = useAuth();
     const tenantId = claims?.tenant_id;
 
-    return useQuery({
-        queryKey: ["leads", tenantId, params?.limit],
-        queryFn: async () => {
-            if (!tenantId) return [];
+    return useInfiniteQuery({
+        queryKey: ["leads", tenantId, params?.status],
+        queryFn: async ({ pageParam }) => {
+            if (!tenantId) return { leads: [], lastDoc: null };
 
             try {
-                // Index requirement: tenant_id ASC, created_at DESC
-                const q = query(
+                let q = query(
                     collection(db, "leads"),
                     where("tenant_id", "==", tenantId),
                     orderBy("created_at", "desc"),
-                    ...(params?.limit ? [limit(params.limit)] : [])
+                    limit(LEADS_PER_PAGE)
                 );
 
+                if (params?.status && params.status !== 'all') {
+                    q = query(q, where("status", "==", params.status));
+                }
+
+                if (pageParam) {
+                    q = query(q, startAfter(pageParam));
+                }
+
                 const snapshot = await getDocs(q);
-                return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Lead[];
+                const leads = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Lead[];
+                const lastDoc = snapshot.docs[snapshot.docs.length - 1];
+
+                return { leads, lastDoc };
             } catch (error) {
                 console.error("Error fetching leads:", error);
                 throw error;
             }
         },
-        enabled: !!tenantId, // Only run if tenantId is available
+        getNextPageParam: (lastPage) => lastPage.lastDoc || undefined,
+        initialPageParam: undefined as QueryDocumentSnapshot | undefined,
+        enabled: !!tenantId,
     });
 }
