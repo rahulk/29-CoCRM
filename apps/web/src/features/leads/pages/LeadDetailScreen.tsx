@@ -8,7 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, ArrowLeft, Phone, Mail, Globe, MapPin, MessageSquare, Sparkles, Building2, Archive, MoreVertical, Send, Flame, Star } from "lucide-react";
+import { Loader2, ArrowLeft, Phone, Mail, Globe, MapPin, MessageSquare, Sparkles, Building2, Archive, MoreVertical, Send, Flame, Star, Calendar as CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useState } from "react";
 import { useAuth } from "@/features/auth/context/AuthContext";
@@ -104,6 +108,24 @@ export default function LeadDetailScreen() {
             navigate("/leads");
         },
         onError: () => toast.error("Failed to archive lead")
+    });
+
+    // Update Follow Up Mutation
+    const updateFollowUpMutation = useMutation({
+        mutationFn: async (date: Date | null) => {
+            if (!id || !user) return;
+            await updateDoc(doc(db, "leads", id), {
+                next_follow_up_at: date,
+                updated_at: serverTimestamp(),
+                updated_by: user.uid,
+            });
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["lead", id] });
+            queryClient.invalidateQueries({ queryKey: ["leads"] }); // Refresh list too
+            toast.success("Follow-up updated");
+        },
+        onError: () => toast.error("Failed to update follow-up")
     });
 
     // Enrich Mutation
@@ -235,6 +257,55 @@ export default function LeadDetailScreen() {
             </div>
 
             <div className="max-w-3xl mx-auto p-4 space-y-4">
+
+                {/* Follow Up Section */}
+                <Card className="border-blue-100 bg-blue-50/50 shadow-sm">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-semibold flex items-center gap-2 text-blue-800">
+                            <CalendarIcon className="h-4 w-4" />
+                            Next Follow-up
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex items-center gap-4">
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                        "w-[240px] justify-start text-left font-normal bg-white border-blue-200 hover:bg-blue-50 hover:text-blue-700",
+                                        !lead.next_follow_up_at && "text-muted-foreground"
+                                    )}
+                                >
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {lead.next_follow_up_at ? (
+                                        format(lead.next_follow_up_at.toDate ? lead.next_follow_up_at.toDate() : new Date(lead.next_follow_up_at), "PPP")
+                                    ) : (
+                                        <span>Pick a date</span>
+                                    )}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                    mode="single"
+                                    selected={lead.next_follow_up_at?.toDate ? lead.next_follow_up_at.toDate() : lead.next_follow_up_at ? new Date(lead.next_follow_up_at) : undefined}
+                                    onSelect={(date) => {
+                                        if (date) {
+                                            // Set to 9 AM on that day
+                                            date.setHours(9, 0, 0, 0);
+                                            updateFollowUpMutation.mutate(date);
+                                        }
+                                    }}
+                                    initialFocus
+                                />
+                            </PopoverContent>
+                        </Popover>
+                        {lead.next_follow_up_at && (
+                            <Button variant="ghost" size="sm" onClick={() => updateFollowUpMutation.mutate(null)} className="text-slate-500 hover:text-red-600">
+                                Clear
+                            </Button>
+                        )}
+                    </CardContent>
+                </Card>
 
                 {/* Status Progress Bar */}
                 <div className="bg-white p-1 rounded-full border shadow-sm flex overflow-x-auto no-scrollbar">

@@ -15,3 +15,7 @@ export {
     handleApifyWebhook,
     scoreLead
 };
+
+export * from "./integrations/gmb/connectGMB";
+export * from "./integrations/gmb/syncReviews";
+export * from "./integrations/gmb/replyToReview";

@@ -20,6 +20,9 @@ import CompanySetupScreen from "@/features/onboarding/pages/CompanySetupScreen";
 import FirstSearchScreen from "@/features/onboarding/pages/FirstSearchScreen";
 import LeadPreviewScreen from "@/features/onboarding/pages/LeadPreviewScreen";
 import TrialActivationScreen from "@/features/onboarding/pages/TrialActivationScreen";
+import IntegrationsScreen from "@/features/settings/pages/IntegrationsScreen";
+import IntegrationsCallback from "@/features/settings/pages/IntegrationsCallback";
+import ReviewsScreen from "@/features/reputation/pages/ReviewsScreen";
 
 const router = createBrowserRouter([
     {
@@ -109,12 +112,24 @@ const router = createBrowserRouter([
                 element: <TaskListScreen />,
             },
             {
+                path: "reviews",
+                element: <ReviewsScreen />,
+            },
+            {
                 path: "profile",
                 element: <ProfileScreen />,
             },
             {
                 path: "settings",
                 element: <SettingsScreen />,
+            },
+            {
+                path: "settings/integrations",
+                element: <IntegrationsScreen />,
+            },
+            {
+                path: "settings/integrations/callback",
+                element: <IntegrationsCallback />,
             },
         ],
     },

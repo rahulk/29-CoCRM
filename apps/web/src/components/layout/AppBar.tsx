@@ -19,6 +19,7 @@ export function AppBar({ title, showBack, actions }: AppBarProps) {
         if (path.startsWith("/leads")) return "Leads";
         if (path.startsWith("/messages")) return "Messages";
         if (path.startsWith("/tasks")) return "Tasks";
+        if (path.startsWith("/reviews")) return "Reputation";
         if (path.startsWith("/settings")) return "Settings";
         if (path.startsWith("/profile")) return "Profile";
         if (path.startsWith("/billing")) return "Billing";

@@ -13,7 +13,8 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Plus, Search, Loader2, MapPin, Edit, Download, Zap, List } from "lucide-react";
+import { ImportLeadsDialog } from "../components/ImportLeadsDialog";
+import { Plus, Search, Loader2, MapPin, Edit, Download, Zap, List, FileUp } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { EmptyState } from "@/components/feedback/EmptyState";
@@ -159,12 +160,31 @@ export default function LeadListScreen() {
                         <Button variant="outline" size="icon" onClick={handleExport} className="hidden md:flex shrink-0 text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-primary h-10 w-10" title="Export CSV">
                             <Download className="h-4 w-4" />
                         </Button>
-                        <Button
-                            className="hidden md:flex bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-100 h-10 px-4"
-                            onClick={() => navigate("/leads/search")}
-                        >
-                            <Plus className="mr-2 h-4 w-4" /> Add Lead
-                        </Button>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    className="hidden md:flex bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-100 h-10 px-4"
+                                >
+                                    <Plus className="mr-2 h-4 w-4" /> Add Lead
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-56">
+                                <DropdownMenuItem onClick={() => navigate("/leads/search")} className="cursor-pointer">
+                                    <MapPin className="mr-2 h-4 w-4 text-indigo-500" />
+                                    <span>Find on Maps</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => navigate("/leads/add")} className="cursor-pointer">
+                                    <Edit className="mr-2 h-4 w-4 text-indigo-500" />
+                                    <span>Add Manually</span>
+                                </DropdownMenuItem>
+                                <ImportLeadsDialog>
+                                    <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="cursor-pointer">
+                                        <FileUp className="mr-2 h-4 w-4 text-indigo-500" />
+                                        <span>Import from CSV</span>
+                                    </DropdownMenuItem>
+                                </ImportLeadsDialog>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
 
                     {/* View Toggle + Status Filters */}
@@ -174,8 +194,8 @@ export default function LeadListScreen() {
                             <button
                                 onClick={() => setViewMode('smart')}
                                 className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium transition-all ${viewMode === 'smart'
-                                        ? 'bg-white text-indigo-700 shadow-sm'
-                                        : 'text-slate-500 hover:text-slate-700'
+                                    ? 'bg-white text-indigo-700 shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-700'
                                     }`}
                             >
                                 <Zap className="w-3 h-3" />
@@ -184,8 +204,8 @@ export default function LeadListScreen() {
                             <button
                                 onClick={() => setViewMode('all')}
                                 className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium transition-all ${viewMode === 'all'
-                                        ? 'bg-white text-indigo-700 shadow-sm'
-                                        : 'text-slate-500 hover:text-slate-700'
+                                    ? 'bg-white text-indigo-700 shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-700'
                                     }`}
                             >
                                 <List className="w-3 h-3" />
@@ -235,6 +255,7 @@ export default function LeadListScreen() {
                         <MorningBriefingCard
                             leads={allLeads || []}
                             userName={userName}
+                            onStartDay={() => navigate("/tasks")}
                         />
 
                         {urgencyGroups.length === 0 ? (
@@ -330,6 +351,17 @@ export default function LeadListScreen() {
                                 <span className="text-xs text-muted-foreground">Type details yourself</span>
                             </div>
                         </DropdownMenuItem>
+                        <ImportLeadsDialog>
+                            <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="p-3 gap-3 rounded-lg focus:bg-indigo-50 focus:text-indigo-700 cursor-pointer text-base">
+                                <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+                                    <FileUp className="h-4 w-4" />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="font-medium">Import CSV</span>
+                                    <span className="text-xs text-muted-foreground">Bulk upload list</span>
+                                </div>
+                            </DropdownMenuItem>
+                        </ImportLeadsDialog>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>

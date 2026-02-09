@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ListChecks, MessageSquare, Users2 } from "lucide-react";
+import { ListChecks, MessageSquare, Users2, Star } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export function BottomNav() {
@@ -24,6 +24,11 @@ export function BottomNav() {
             label: "Tasks",
             path: "/tasks",
             icon: ListChecks,
+        },
+        {
+            label: "Reputation",
+            path: "/reviews",
+            icon: Star,
         },
     ];
 

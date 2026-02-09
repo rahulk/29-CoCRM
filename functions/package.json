@@ -18,7 +18,8 @@
         "@google-cloud/vertexai": "^1.10.0",
         "axios": "^1.6.0",
         "firebase-admin": "^13.6.1",
-        "firebase-functions": "^7.0.5"
+        "firebase-functions": "^7.0.5",
+        "googleapis": "^171.4.0"
     },
     "devDependencies": {
         "@types/node": "^22.0.0",
