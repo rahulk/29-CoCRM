@@ -1,0 +1,23 @@
+{
+  "projects": {},
+  "targets": {
+    "cocrm-dev": {
+      "hosting": {
+        "prod": [
+          "cocrm-prod"
+        ],
+        "dev": [
+          "cocrm-dev"
+        ]
+      }
+    },
+    "cocrm-prod": {
+      "hosting": {
+        "prod": [
+          "cocrm-prod"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
