@@ -2,9 +2,11 @@
 
 # Standard SaaS Features (Gap Closure)
 
-**Purpose:** This document captures standard multi-tenant SaaS features that are missing from the current specification. Each feature includes data schema, API/CF specs, UI screens, security rules, and the phase in which it should be built.
+**Purpose:** This document captures standard multi-tenant SaaS features that are missing from the current specification. Each feature includes data schema, API/CF specs, UI screens, and security rules.
 
-**Principle:** These are not "nice-to-haves" — they are foundational expectations of any production SaaS product. Skipping them creates tech debt that compounds with every tenant onboarded.
+**Build Sequence:** For authoritative phase assignments, step numbers, and acceptance criteria, see `25_Build_Phase_Breakdown.md`. Phase references below are indicative only.
+
+**Principle:** These are not "nice-to-haves" â€” they are foundational expectations of any production SaaS product. Skipping them creates tech debt that compounds with every tenant onboarded.
 
 ---
 
@@ -12,25 +14,25 @@
 
 | # | Feature | Priority | Phase | Effort |
 |---|---------|----------|-------|--------|
-| 1 | Audit Fields (created/updated by/at) | **P0 — Must have** | Phase 0 (baked into scaffold) | Low |
+| 1 | Audit Fields (created/updated by/at) | **P0 â€” Must have** | Phase 0 (baked into scaffold) | Low |
 | 2 | Forgot Password | **P0** | Phase 0 (Auth flow) | Low |
 | 3 | User Profile Screen | **P0** | Phase 0 (Auth flow) | Medium |
-| 4 | Search Within Lists | **P1 — Should have** | Phase 1 (Core Data) | Medium |
-| 5 | Export Lists to CSV/Excel | **P1** | Phase 1 (Core Data) | Medium |
-| 6 | Tenant Dashboard (Home) | **P1** | Phase 1 (new step) | Medium |
-| 7 | Soft Delete / Archive Pattern | **P1** | Phase 1 (Core Data) | Low |
-| 8 | Login History / Session Audit | **P2 — Nice to have** | Phase 7 (Admin + Logging) | Medium |
-| 9 | Module-Level Access Rights | **P2** | Phase 6 (Settings + Team) | High |
+| 4 | Search Within Lists | **P1 â€” Should have** | Phase 1 (Onboarding & Discovery) | Medium |
+| 5 | Export Lists to CSV/Excel | **P1** | Phase 2 (Lead Pipeline) | Medium |
+| 6 | Tenant Dashboard (Home) | **P1** | Phase 2 (Lead Pipeline) | Medium |
+| 7 | Soft Delete / Archive Pattern | **P1** | Phase 2 (Lead Pipeline) | Low |
+| 8 | Login History / Session Audit | **P2 â€” Nice to have** | Phase 6 (Super Admin + Logging) | Medium |
+| 9 | Module-Level Access Rights | **P2** | Phase 5 (Settings + Team) | High |
 | 10 | In-App Notification Center | **P2** | Phase 3 (Communication) | Medium |
-| 11 | Tenant-Level Activity Log | **P2** | Phase 7 (Admin + Logging) | Medium |
-| 12 | Configurable Dashboard Cards | **P3 — Future** | Phase 2+ | Medium |
+| 11 | Tenant-Level Activity Log | **P2** | Phase 6 (Super Admin + Logging) | Medium |
+| 12 | Configurable Dashboard Cards | **P3 â€” Future** | Phase 2+ | Medium |
 | 13 | Session Management | **P3** | Phase 2+ | Medium |
 
 ---
 
 ## 1. Audit Fields (Global Mandatory Pattern)
 
-**Priority:** P0 — Bake into every collection from day one. Retrofitting later is painful.
+**Priority:** P0 â€” Bake into every collection from day one. Retrofitting later is painful.
 
 ### 1.1 Standard Audit Fields
 
@@ -59,28 +61,28 @@ The `created_by` / `updated_by` field value depends on who initiated the write:
 
 | Collection | `created_at` | `created_by` | `updated_at` | `updated_by` | Reason |
 |------------|:---:|:---:|:---:|:---:|--------|
-| `tenants` | ✅ | ✅ | ✅ | ✅ | Mutable (settings, status changes) |
-| `users` | ✅ | ✅ | ✅ | ✅ | Mutable (profile edits, role changes) |
-| `leads` | ✅ | ✅ | ✅ | ✅ | Mutable (status, assignment, follow-ups) |
-| `interactions` | ✅ | ✅ | ❌ | ❌ | Append-only (never updated) |
-| `credit_transactions` | ✅ | ✅ | ❌ | ❌ | Immutable ledger (never updated) |
-| `products` | ✅ | ✅ | ✅ | ✅ | Mutable (name, price, active status) |
-| `invitations` | ✅ | ✅ | ✅ | ✅ | Mutable (status changes: pending → accepted) |
-| `system_logs` | ✅ | ✅ | ✅ | ✅ | Mutable (status: open → resolved) |
-| `message_queue` | ✅ | ✅ | ✅ | ✅ | Mutable (status: queued → sent/failed) |
-| `brochure_vectors` | ✅ | ✅ | ❌ | ❌ | Write-once (replaced entirely on re-index) |
-| `search_grids` (sub) | ✅ | ✅ | ✅ | ✅ | Mutable (frequency, last_run_at) |
-| `system_config` | ✅ | ✅ | ✅ | ✅ | Mutable (API keys rotation) |
-| `system_config_public` | ✅ | ✅ | ✅ | ✅ | Mutable (min_app_version) |
-| `login_history` (NEW §8) | ✅ | ✅ | ❌ | ❌ | Append-only |
-| `activity_logs` (NEW §11) | ✅ | ✅ | ❌ | ❌ | Append-only |
-| `notifications` (NEW §10) | ✅ | ✅ | ✅ | ✅ | Mutable (read status) |
+| `tenants` | âœ… | âœ… | âœ… | âœ… | Mutable (settings, status changes) |
+| `users` | âœ… | âœ… | âœ… | âœ… | Mutable (profile edits, role changes) |
+| `leads` | âœ… | âœ… | âœ… | âœ… | Mutable (status, assignment, follow-ups) |
+| `interactions` | âœ… | âœ… | âŒ | âŒ | Append-only (never updated) |
+| `credit_transactions` | âœ… | âœ… | âŒ | âŒ | Immutable ledger (never updated) |
+| `products` | âœ… | âœ… | âœ… | âœ… | Mutable (name, price, active status) |
+| `invitations` | âœ… | âœ… | âœ… | âœ… | Mutable (status changes: pending â†’ accepted) |
+| `system_logs` | âœ… | âœ… | âœ… | âœ… | Mutable (status: open â†’ resolved) |
+| `message_queue` | âœ… | âœ… | âœ… | âœ… | Mutable (status: queued â†’ sent/failed) |
+| `brochure_vectors` | âœ… | âœ… | âŒ | âŒ | Write-once (replaced entirely on re-index) |
+| `search_grids` (sub) | âœ… | âœ… | âœ… | âœ… | Mutable (frequency, last_run_at) |
+| `system_config` | âœ… | âœ… | âœ… | âœ… | Mutable (API keys rotation) |
+| `system_config_public` | âœ… | âœ… | âœ… | âœ… | Mutable (min_app_version) |
+| `login_history` (NEW Â§8) | âœ… | âœ… | âŒ | âŒ | Append-only |
+| `activity_logs` (NEW Â§11) | âœ… | âœ… | âŒ | âŒ | Append-only |
+| `notifications` (NEW Â§10) | âœ… | âœ… | âœ… | âœ… | Mutable (read status) |
 
 ### 1.4 Implementation Rules
 
 **Cloud Functions (TypeScript):**
 ```typescript
-// On CREATE — always set all 4 fields (updated_at = created_at initially)
+// On CREATE â€” always set all 4 fields (updated_at = created_at initially)
 const now = admin.firestore.FieldValue.serverTimestamp();
 const actorId = context.auth?.uid ?? `system:${functionName}`;
 
@@ -92,7 +94,7 @@ const doc = {
   updated_by: actorId,
 };
 
-// On UPDATE — always refresh updated_at and updated_by
+// On UPDATE â€” always refresh updated_at and updated_by
 const update = {
   ...changes,
   updated_at: admin.firestore.FieldValue.serverTimestamp(),
@@ -165,10 +167,10 @@ UI can display: "Last updated by Rahul on 15 Jan 2026" on detail screens.
 
 ## 2. Forgot Password
 
-**Priority:** P0 — Must have for launch. Users WILL forget passwords.
+**Priority:** P0 â€” Must have for launch. Users WILL forget passwords.
 **Phase:** Phase 0 (add to Auth flow, Step 0.3)
 
-### 2.1 UI Change (Doc 16 — LoginScreen §1.1)
+### 2.1 UI Change (Doc 16 â€” LoginScreen Â§1.1)
 
 Add to the Email Sign-In expanded section:
 
@@ -192,7 +194,7 @@ Add to the Email Sign-In expanded section:
 ### 2.2 Logic
 
 ```typescript
-// No Cloud Function needed — Firebase handles this natively
+// No Cloud Function needed â€” Firebase handles this natively
 await sendPasswordResetEmail(auth, email);
 ```
 
@@ -204,13 +206,13 @@ No new route needed. This is an inline state change within `/login`.
 
 | Document | Change Required |
 |----------|----------------|
-| **Doc 16 (UI Screens)** | Add "Forgot Password" to LoginScreen §1.1 |
+| **Doc 16 (UI Screens)** | Add "Forgot Password" to LoginScreen Â§1.1 |
 
 ---
 
 ## 3. User Profile Screen
 
-**Priority:** P0 — Every SaaS app needs this. Users need to view/edit their own info.
+**Priority:** P0 â€” Every SaaS app needs this. Users need to view/edit their own info.
 **Phase:** Phase 0 (add after Step 0.3, before 0.5)
 
 ### 3.1 Route
@@ -219,14 +221,14 @@ No new route needed. This is an inline state change within `/login`.
 |-------|--------|:---:|------------|
 | `/profile` | ProfileScreen | Yes | Any tenant role |
 
-**Navigation:** Tapping the Avatar/Settings icon in AppBar → opens `/settings`. Add a "My Profile" row at the top of SettingsScreen that navigates to `/profile`.
+**Navigation:** Tapping the Avatar/Settings icon in AppBar â†’ opens `/settings`. Add a "My Profile" row at the top of SettingsScreen that navigates to `/profile`.
 
 ### 3.2 UI: ProfileScreen
 
 **Route:** `/profile`
 **Purpose:** View and edit the current user's personal information.
 
-**Layout (scrollable container — `div` with `overflow-y-auto`):**
+**Layout (scrollable container â€” `div` with `overflow-y-auto`):**
 
 **Section A: Avatar & Identity (Top, non-editable overview)**
 * Large avatar circle (initials or Google profile photo from `auth.currentUser?.photoURL`).
@@ -239,25 +241,25 @@ No new route needed. This is an inline state change within `/login`.
 
 | Field | Type | Editable | Validation |
 |-------|------|:---:|-----------|
-| Name | Text | ✅ | Min 2 chars, max 50 chars |
-| Phone | Text | ✅ | Valid phone format, optional |
-| Email | Text | ❌ (display only) | — |
-| Role | Chip | ❌ (display only) | — |
+| Name | Text | âœ… | Min 2 chars, max 50 chars |
+| Phone | Text | âœ… | Valid phone format, optional |
+| Email | Text | âŒ (display only) | â€” |
+| Role | Chip | âŒ (display only) | â€” |
 
 * **"Save Changes"** button (only visible when form is dirty).
 * On save: Calls CF `updateUserProfile`.
 
 **Section C: Password (Only for Email/Password users, hidden for Google Sign-In)**
-* "Change Password" row → tap expands to:
+* "Change Password" row â†’ tap expands to:
   * Current Password field.
   * New Password field.
   * Confirm New Password field.
   * "Update Password" button.
-* Logic: `updatePassword(auth.currentUser!, newPassword)` (requires recent auth — may trigger re-authentication).
+* Logic: `updatePassword(auth.currentUser!, newPassword)` (requires recent auth â€” may trigger re-authentication).
 
 **Section D: Danger Zone (Bottom)**
-* "Sign Out" button (red text) → `signOut(auth)`.
-* "Delete Account" text link (grey) → Confirmation dialog → calls `deleteAccount` CF (Phase 2 stub from Doc 3 §12).
+* "Sign Out" button (red text) â†’ `signOut(auth)`.
+* "Delete Account" text link (grey) â†’ Confirmation dialog â†’ calls `deleteAccount` CF (Phase 2 stub from Doc 3 Â§12).
 
 ### 3.3 Cloud Function: `updateUserProfile`
 
@@ -284,9 +286,9 @@ No new route needed. This is an inline state change within `/login`.
 
 **Return:** `{ success: true }`
 
-**Why CF:** `users` collection is write-locked to Super Admin in security rules (Doc 5 §4). This CF acts as a controlled proxy for self-edits, similar to `updateTenantProfile`.
+**Why CF:** `users` collection is write-locked to Super Admin in security rules (Doc 5 Â§4). This CF acts as a controlled proxy for self-edits, similar to `updateTenantProfile`.
 
-### 3.4 Data Schema Addition (Doc 2 — `users` collection)
+### 3.4 Data Schema Addition (Doc 2 â€” `users` collection)
 
 Add to existing `users` fields:
 * `avatar_url` (String, Optional): Google profile photo URL or custom upload. Populated from `auth.currentUser.photoURL` on first login.
@@ -306,14 +308,14 @@ Add to existing `users` fields:
 | **Doc 5 (Security Rules)** | No change needed (CF uses Admin SDK, bypasses rules) |
 | **Doc 6 (Project Structure)** | ProfilePage goes in `features/auth/pages/` or `features/settings/pages/` |
 | **Doc 16 (UI Screens)** | Add ProfileScreen spec; add "My Profile" row to SettingsScreen |
-| **Doc 0 (Handoff Guardrails)** | Add to Phase 0 build sequence as Step 0.3.1 (after auth, before guards) |
+| **Doc 25 (Build Phase Breakdown)** | Included in Phase 0, Step 0.3.1 |
 
 ---
 
 ## 4. Search Within Lists
 
-**Priority:** P1 — Users will have 100s-1000s of leads. Without search, the product feels broken.
-**Phase:** Phase 1 (Core Data)
+**Priority:** P1 â€” Users will have 100s-1000s of leads. Without search, the product feels broken.
+**Phase:** Phase 1 (Onboarding & First Discovery)
 
 ### 4.1 Approach (MVP)
 
@@ -329,13 +331,13 @@ Firestore doesn't support native full-text search. For MVP, use a **two-tier str
 ### 4.2 New Field: `search_name`
 
 Add to `leads` collection (Doc 2):
-* `search_name` (String): Lowercase, trimmed version of `business_details.name`. Set by `discoverLeads` CF and `enrichLeads` CF. Example: `"rahul's study center"` → `"rahul's study center"`.
+* `search_name` (String): Lowercase, trimmed version of `business_details.name`. Set by `discoverLeads` CF and `enrichLeads` CF. Example: `"rahul's study center"` â†’ `"rahul's study center"`.
 
 This enables Firestore prefix queries without case-sensitivity issues.
 
 ### 4.3 UI: Search Bar Component (Reusable)
 
-**Component:** `<ListSearchBar />` — a reusable component used across multiple screens.
+**Component:** `<ListSearchBar />` â€” a reusable component used across multiple screens.
 
 ```tsx
 <div className="relative">
@@ -372,21 +374,21 @@ This enables Firestore prefix queries without case-sensitivity issues.
 | **Doc 2 (Data Schema)** | Add `search_name` to `leads`; add index #17 |
 | **Doc 3 (API Workflows)** | `discoverLeads` and `enrichLeads` must set `search_name` on write |
 | **Doc 16 (UI Screens)** | Add `ListSearchBar` to LeadListScreen, InboxScreen, TaskListScreen, TeamScreen |
-| **Doc 0 (Handoff Guardrails)** | Add to Phase 1 build sequence |
+| **Doc 25 (Build Phase Breakdown)** | Included in Phase 1 |
 
 ---
 
 ## 5. Export Lists to CSV/Excel
 
-**Priority:** P1 — Every business user expects "Export to Excel". Non-negotiable for paid SaaS.
-**Phase:** Phase 1 (after list screens are built)
+**Priority:** P1 â€” Every business user expects "Export to Excel". Non-negotiable for paid SaaS.
+**Phase:** Phase 2 (Lead Pipeline polish)
 
 ### 5.1 Approach
 
 **Client-side generation** (no CF needed for MVP):
 * Use the `papaparse` npm package for CSV export.
 * Use the `xlsx` (SheetJS) npm package for XLSX export (Phase 2).
-* Generate file locally → trigger browser download via `Blob` + `URL.createObjectURL()`.
+* Generate file locally â†’ trigger browser download via `Blob` + `URL.createObjectURL()`.
 
 **Why not a Cloud Function?**
 * For MVP, datasets per tenant are < 5,000 leads. Client-side is sufficient.
@@ -398,9 +400,9 @@ This enables Firestore prefix queries without case-sensitivity issues.
 Add an "Export" icon button (or overflow menu item) to the AppBar of each list screen.
 
 **Behavior:**
-1. User taps "Export" → shows bottom sheet:
-   * "Export Current View (filtered)" — exports only what's currently filtered/visible.
-   * "Export All" — fetches all records for this tenant (with progress indicator).
+1. User taps "Export" â†’ shows bottom sheet:
+   * "Export Current View (filtered)" â€” exports only what's currently filtered/visible.
+   * "Export All" â€” fetches all records for this tenant (with progress indicator).
 2. Format: CSV for MVP. (Add XLSX option in Phase 2.)
 3. File naming: `{collection}_{tenant_name}_{YYYY-MM-DD}.csv`
    * Example: `leads_rahuls_study_center_2026-01-15.csv`
@@ -412,14 +414,14 @@ Add an "Export" icon button (or overflow menu item) to the AppBar of each list s
 | Screen | Collection | Columns Exported |
 |--------|-----------|-----------------|
 | LeadListScreen | `leads` | Name, Phone, Email, Status, Priority, Rating, Source, Created, Last Contacted |
-| BillingScreen (transactions) | `credit_transactions` | Date, Amount (₹), Reason, Reference ID, Status |
+| BillingScreen (transactions) | `credit_transactions` | Date, Amount (â‚¹), Reason, Reference ID, Status |
 | TeamScreen | `users` | Name, Email, Phone, Role, Status, Joined Date |
 | SystemLogsScreen (admin) | `system_logs` | Date, Severity, Source, Error Message, Status |
 | TaskListScreen | `leads` (filtered) | Name, Phone, Follow-up Date, Priority, Owner |
 
 ### 5.3 Permission Control
 
-* **LeadListScreen export:** `tenant_admin` only (by default). Configurable in Phase 2 via module permissions (§9).
+* **LeadListScreen export:** `tenant_admin` only (by default). Configurable in Phase 2 via module permissions (Â§9).
 * **BillingScreen export:** `tenant_admin` only.
 * **TeamScreen export:** `tenant_admin` only.
 * **SystemLogsScreen export:** `super_admin` only.
@@ -445,14 +447,14 @@ export const exportToCsv = (
 | **Doc 7 (Dependencies)** | Add `papaparse` package (and `xlsx`/SheetJS for Phase 2) |
 | **Doc 16 (UI Screens)** | Add Export button to LeadListScreen, BillingScreen, TeamScreen, SystemLogsScreen, TaskListScreen |
 | **Doc 6 (Project Structure)** | Add `utils/csvExporter.ts` |
-| **Doc 0 (Handoff Guardrails)** | Add to Phase 1 build sequence as Step 1.6 |
+| **Doc 25 (Build Phase Breakdown)** | Included in Phase 2, Step 2.6 |
 
 ---
 
 ## 6. Tenant Dashboard (Home Screen)
 
-**Priority:** P1 — Without a dashboard, users land on the lead list with no context. A dashboard gives instant situational awareness.
-**Phase:** Phase 1 (new step after lead screens)
+**Priority:** P1 â€” Without a dashboard, users land on the lead list with no context. A dashboard gives instant situational awareness.
+**Phase:** Phase 2 (Lead Pipeline)
 
 ### 6.1 Route
 
@@ -466,25 +468,25 @@ export const exportToCsv = (
 
 ### 6.2 UI: Dashboard Summary Card (at top of LeadListScreen)
 
-**Component:** `<DashboardSummaryCard />` — a collapsible card shown at the top of LeadListScreen.
+**Component:** `<DashboardSummaryCard />` â€” a collapsible card shown at the top of LeadListScreen.
 
-**Layout (Collapsed — default):** A single horizontal row of 4 metric chips:
+**Layout (Collapsed â€” default):** A single horizontal row of 4 metric chips:
 
 | Metric | Value Source | Format |
 |--------|-------------|--------|
 | Leads This Month | `usage_current.leads_fetched_this_month` / `usage_limits.max_leads_per_month` | "450 / 1,000" |
 | Messages Today | `usage_current.whatsapp_sent_today` / `usage_limits.max_whatsapp_msgs_daily` | "23 / 500" |
-| Credits | `credits_balance / 100` | "₹340.00" |
+| Credits | `credits_balance / 100` | "â‚¹340.00" |
 | Follow-ups Due | Count from tasks query (`next_follow_up_at <= now`) | "7 due" |
 
-**Layout (Expanded — tap to expand):** Additional rows:
+**Layout (Expanded â€” tap to expand):** Additional rows:
 
 | Metric | Value Source |
 |--------|-------------|
 | Hot Leads | Count where `priority == 'hot'` |
 | Unread Messages | Count where `has_unread_message == true` |
 | Trial Days Left | `trial_ends_at - now` (only shown during trial) |
-| Response Rate | (leads with `status == 'responded'`) / (leads with `status == 'contacted'`) × 100 |
+| Response Rate | (leads with `status == 'responded'`) / (leads with `status == 'contacted'`) Ã— 100 |
 
 **Visibility:**
 * Shown for all tenant roles.
@@ -511,16 +513,16 @@ export const useDashboardMetrics = () => {
 
 | Document | Change Required |
 |----------|----------------|
-| **Doc 16 (UI Screens)** | Add `DashboardSummaryCard` to LeadListScreen §3.1 |
+| **Doc 16 (UI Screens)** | Add `DashboardSummaryCard` to LeadListScreen Â§3.1 |
 | **Doc 6 (Project Structure)** | Add to `components/common/` (reusable shared component) |
-| **Doc 0 (Handoff Guardrails)** | Add to Phase 1 build sequence as Step 1.4.1 (after LeadListScreen) |
+| **Doc 25 (Build Phase Breakdown)** | Included in Phase 2, Step 2.5 |
 
 ---
 
 ## 7. Soft Delete / Archive Pattern
 
-**Priority:** P1 — Accidental permanent deletion is a support nightmare. Archive first, delete later.
-**Phase:** Phase 1 (bake into core data from the start)
+**Priority:** P1 â€” Accidental permanent deletion is a support nightmare. Archive first, delete later.
+**Phase:** Phase 1 (pattern) / Phase 2 (ArchivedLeadsScreen)
 
 ### 7.1 Pattern
 
@@ -536,19 +538,19 @@ No document is ever hard-deleted by the client or standard Cloud Functions. Inst
 
 | Collection | Archive Supported | Hard Delete | Notes |
 |------------|:---:|:---:|-------|
-| `leads` | ✅ | Never (MVP) | "Archive" action on LeadDetailScreen |
-| `products` | ✅ | Never (MVP) | "Deactivate" already exists via `is_active`, but archive is different — archived = hidden from all views |
-| `interactions` | ❌ | Never | Append-only audit trail — never hidden |
-| `credit_transactions` | ❌ | Never | Immutable ledger |
-| `users` | ❌ (uses `is_active`) | Never | Deactivation via `removeUser` CF already exists |
-| `invitations` | ❌ | Never | Short-lived, expire naturally |
+| `leads` | âœ… | Never (MVP) | "Archive" action on LeadDetailScreen |
+| `products` | âœ… | Never (MVP) | "Deactivate" already exists via `is_active`, but archive is different â€” archived = hidden from all views |
+| `interactions` | âŒ | Never | Append-only audit trail â€” never hidden |
+| `credit_transactions` | âŒ | Never | Immutable ledger |
+| `users` | âŒ (uses `is_active`) | Never | Deactivation via `removeUser` CF already exists |
+| `invitations` | âŒ | Never | Short-lived, expire naturally |
 
 ### 7.3 Query Impact
 
 **EVERY list query** on archivable collections must include `.where('is_archived', '==', false)` by default.
 
 ```typescript
-// api/leadsApi.ts — updated useLeads
+// api/leadsApi.ts â€” updated useLeads
 const q = query(
   collection(db, 'leads'),
   where('tenant_id', '==', tenantId)
@@ -562,11 +564,11 @@ if (!includeArchived) {
 
 ### 7.4 UI: Archive Action
 
-**LeadDetailScreen** — add to overflow menu (⋮):
-* "Archive Lead" → Confirmation dialog: "Archive {business_name}? You can restore it later from Settings." → sets `is_archived: true`, `archived_at: now`, `archived_by: uid`.
+**LeadDetailScreen** â€” add to overflow menu (â‹®):
+* "Archive Lead" â†’ Confirmation dialog: "Archive {business_name}? You can restore it later from Settings." â†’ sets `is_archived: true`, `archived_at: now`, `archived_by: uid`.
 
-**SettingsScreen** — add new row:
-* "Archived Leads ({count})" → navigates to `/settings/archived-leads` → list of archived leads with "Restore" action.
+**SettingsScreen** â€” add new row:
+* "Archived Leads ({count})" â†’ navigates to `/settings/archived-leads` â†’ list of archived leads with "Restore" action.
 
 **Restore action:** Sets `is_archived: false`, `archived_at: null`, `archived_by: null`, updates `updated_at/by`.
 
@@ -576,7 +578,7 @@ if (!includeArchived) {
 |---------|-----------|--------|---------|
 | 18 | `leads` | `tenant_id` (ASC) + `is_archived` (ASC) + `created_at` (DESC) | Default lead list (excluding archived) |
 
-**Note:** Several existing indexes (1, 2, 5, 8, 10, 11, 12) may need to be updated to include `is_archived` as a prefix filter. Evaluate during implementation — Firestore may handle this via index merging, or explicit composite indexes may be needed.
+**Note:** Several existing indexes (1, 2, 5, 8, 10, 11, 12) may need to be updated to include `is_archived` as a prefix filter. Evaluate during implementation â€” Firestore may handle this via index merging, or explicit composite indexes may be needed.
 
 ### 7.6 Documents Impacted
 
@@ -592,8 +594,8 @@ if (!includeArchived) {
 
 ## 8. Login History / Session Audit
 
-**Priority:** P2 — Important for security-conscious tenants, but not launch-blocking.
-**Phase:** Phase 7 (Admin + Logging)
+**Priority:** P2 â€” Important for security-conscious tenants, but not launch-blocking.
+**Phase:** Phase 6 (Super Admin & Logging)
 
 ### 8.1 New Collection: `login_history`
 
@@ -640,12 +642,12 @@ await logLogin({
   3. Write to `login_history` collection.
 * **Rate Limit:** Max 5 calls per minute per user.
 
-### 8.3 UI: Login History (in ProfileScreen §3)
+### 8.3 UI: Login History (in ProfileScreen Â§3)
 
 Add **Section E: Recent Activity** to ProfileScreen:
 * Last 5 login events shown as a timeline.
-* Each entry: "{auth_method} login • {device_info.os} • {relative_time}"
-* "View All" link → modal/bottom sheet with full paginated history.
+* Each entry: "{auth_method} login â€¢ {device_info.os} â€¢ {relative_time}"
+* "View All" link â†’ modal/bottom sheet with full paginated history.
 
 **For tenant_admin** (in TeamScreen):
 * When viewing a team member, show their last login time: "Last active: 2 hours ago".
@@ -662,7 +664,7 @@ match /login_history/{logId} {
     && belongsToTenant(resource.data);
   // Super admin can read all
   allow read: if isSuperAdmin();
-  // No client writes — CF only
+  // No client writes â€” CF only
   allow write: if false;
 }
 ```
@@ -675,14 +677,14 @@ match /login_history/{logId} {
 | **Doc 3 (API Workflows)** | Add `logLoginEvent` CF spec |
 | **Doc 5 (Security Rules)** | Add `login_history` rules |
 | **Doc 16 (UI Screens)** | Add "Recent Activity" section to ProfileScreen; add "Last active" to TeamScreen |
-| **Doc 0 (Handoff Guardrails)** | Add to Phase 7 build sequence |
+| **Doc 25 (Build Phase Breakdown)** | Included in Phase 6 |
 
 ---
 
 ## 9. Module-Level Access Rights (Granular Permissions)
 
-**Priority:** P2 — Current system has only 2 roles. Real-world teams need more nuance.
-**Phase:** Phase 6 (Settings + Team)
+**Priority:** P2 â€” Current system has only 2 roles. Real-world teams need more nuance.
+**Phase:** Phase 5 (Settings & Team)
 
 ### 9.1 Current State
 
@@ -696,17 +698,17 @@ Only 2 roles: `tenant_admin` (full access) and `sales_rep` (limited). No way to 
 
 | Permission Key | Description | `tenant_admin` Default | `sales_rep` Default |
 |---------------|-------------|:---:|:---:|
-| `leads.view_all` | View all leads (vs only assigned) | ✅ | ❌ |
-| `leads.search` | Run new lead discovery | ✅ | ❌ |
-| `leads.export` | Export lead data | ✅ | ❌ |
-| `leads.archive` | Archive/restore leads | ✅ | ❌ |
-| `communication.send` | Send WhatsApp messages | ✅ | ✅ |
-| `communication.ai_draft` | Use AI draft feature | ✅ | ✅ |
-| `billing.view` | View billing & credits | ✅ | ❌ |
-| `settings.manage` | Edit tenant settings | ✅ | ❌ |
-| `team.manage` | Invite/remove team members | ✅ | ❌ |
+| `leads.view_all` | View all leads (vs only assigned) | âœ… | âŒ |
+| `leads.search` | Run new lead discovery | âœ… | âŒ |
+| `leads.export` | Export lead data | âœ… | âŒ |
+| `leads.archive` | Archive/restore leads | âœ… | âŒ |
+| `communication.send` | Send WhatsApp messages | âœ… | âœ… |
+| `communication.ai_draft` | Use AI draft feature | âœ… | âœ… |
+| `billing.view` | View billing & credits | âœ… | âŒ |
+| `settings.manage` | Edit tenant settings | âœ… | âŒ |
+| `team.manage` | Invite/remove team members | âœ… | âŒ |
 
-### 9.3 Data Schema Addition (Doc 2 — `users` collection)
+### 9.3 Data Schema Addition (Doc 2 â€” `users` collection)
 
 Add to `users` fields:
 ```
@@ -743,23 +745,23 @@ const DEFAULT_PERMISSIONS = {
 
 ### 9.5 UI: Permission Editor (TeamScreen)
 
-In TeamScreen, when tenant_admin taps on a team member → show permission toggles:
+In TeamScreen, when tenant_admin taps on a team member â†’ show permission toggles:
 
-**Component:** `<PermissionEditor />` — a list of toggle switches grouped by module.
+**Component:** `<PermissionEditor />` â€” a list of toggle switches grouped by module.
 
 ```
 [Leads]
-  ☑ View all leads (vs only assigned)
-  ☐ Run lead search
-  ☐ Export lead data
-  ☐ Archive leads
+  â˜‘ View all leads (vs only assigned)
+  â˜ Run lead search
+  â˜ Export lead data
+  â˜ Archive leads
 
 [Communication]
-  ☑ Send WhatsApp messages
-  ☑ Use AI drafts
+  â˜‘ Send WhatsApp messages
+  â˜‘ Use AI drafts
 
 [Other]
-  ☐ View billing
+  â˜ View billing
 ```
 
 **Save action:** Calls CF `updateUserPermissions`.
@@ -798,13 +800,13 @@ if (leads_export) {
 | **Doc 5 (Security Rules)** | Add permission checks where applicable (e.g., export, search) |
 | **Doc 11 (User Management)** | Reference permission defaults on user creation |
 | **Doc 16 (UI Screens)** | Add PermissionEditor to TeamScreen; conditionally show/hide UI elements |
-| **Doc 0 (Handoff Guardrails)** | Add to Phase 6 build sequence |
+| **Doc 25 (Build Phase Breakdown)** | Included in Phase 5 |
 
 ---
 
 ## 10. In-App Notification Center
 
-**Priority:** P2 — Push notifications exist (fcm_token in users), but there's no in-app notification feed.
+**Priority:** P2 â€” Push notifications exist (fcm_token in users), but there's no in-app notification feed.
 **Phase:** Phase 3 (Communication)
 
 ### 10.1 New Collection: `notifications`
@@ -832,7 +834,7 @@ if (leads_export) {
 |-------|------|-----------|-----------|
 | Inbound WhatsApp reply | `lead_reply` | Assigned user (or all if unassigned) | `handleInboundMessage` CF |
 | AI draft ready | `ai_draft_ready` | Assigned user | `aiReply` CF |
-| Credits below ₹100 | `credits_low` | All `tenant_admin` users | `sendWhatsapp` CF (post-deduction check) |
+| Credits below â‚¹100 | `credits_low` | All `tenant_admin` users | `sendWhatsapp` CF (post-deduction check) |
 | Trial expires in 2 days | `trial_expiring` | All `tenant_admin` users | Cron CF |
 | Follow-up due today | `task_due` | `follow_up_owner` | Cron CF (morning batch) |
 | New team member joined | `team_joined` | All `tenant_admin` users | `assignTenantOnSignup` CF |
@@ -841,7 +843,7 @@ if (leads_export) {
 
 **Location:** AppBar, between Credits Pill and Avatar icon.
 
-**Component:** `<NotificationBell />` — icon with unread count badge.
+**Component:** `<NotificationBell />` â€” icon with unread count badge.
 
 * **Badge:** Red circle with count of unread notifications (max "9+").
 * **Tap:** Opens `/notifications` screen (or a bottom sheet/overlay).
@@ -849,7 +851,7 @@ if (leads_export) {
 **NotificationsScreen:**
 * List of notification cards, newest first.
 * Each card: icon (by type) + title + body + relative time + unread indicator (blue dot).
-* Tap → navigates to referenced entity (e.g., tap lead_reply → go to `/messages/:leadId`).
+* Tap â†’ navigates to referenced entity (e.g., tap lead_reply â†’ go to `/messages/:leadId`).
 * "Mark All Read" button in AppBar.
 * Pull-to-refresh.
 * Pagination (20 per page).
@@ -864,7 +866,7 @@ match /notifications/{notifId} {
   allow update: if request.auth != null 
     && request.auth.uid == resource.data.user_id
     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['is_read', 'updated_at', 'updated_by']);
-  // No client creates/deletes — CF only
+  // No client creates/deletes â€” CF only
   allow create, delete: if false;
 }
 ```
@@ -883,14 +885,14 @@ match /notifications/{notifId} {
 | **Doc 3 (API Workflows)** | Update `handleInboundMessage`, `aiReply`, `sendWhatsapp`, cron CFs to create notifications |
 | **Doc 5 (Security Rules)** | Add `notifications` rules |
 | **Doc 16 (UI Screens)** | Add NotificationBell to AppBar; add NotificationsScreen |
-| **Doc 0 (Handoff Guardrails)** | Add to Phase 3 build sequence |
+| **Doc 25 (Build Phase Breakdown)** | Included in Phase 3 |
 
 ---
 
 ## 11. Tenant-Level Activity Log
 
-**Priority:** P2 — Distinct from `system_logs` (which is for errors). This tracks who did what.
-**Phase:** Phase 7 (Admin + Logging)
+**Priority:** P2 â€” Distinct from `system_logs` (which is for errors). This tracks who did what.
+**Phase:** Phase 6 (Super Admin & Logging)
 
 ### 11.1 New Collection: `activity_logs`
 
@@ -929,10 +931,10 @@ match /notifications/{notifId} {
 ### 11.3 UI: Activity Log (SettingsScreen)
 
 Add to SettingsScreen:
-* "Activity Log" row → navigates to `/settings/activity-log`.
+* "Activity Log" row â†’ navigates to `/settings/activity-log`.
 * **ActivityLogScreen:** Paginated list of activity entries.
   * Each entry: Avatar (user) + "{user_name} {action description}" + relative time.
-  * Example: "Rahul K archived lead Fitness Hub • 2 hours ago"
+  * Example: "Rahul K archived lead Fitness Hub â€¢ 2 hours ago"
   * Filter by: action type, user, date range.
 
 **Visibility:** `tenant_admin` only.
@@ -949,7 +951,7 @@ match /activity_logs/{logId} {
   allow read: if isSuperAdmin();
   // Client can create activity logs for their own tenant
   allow create: if request.auth != null && assigningCorrectTenant() && hasAppendOnlyAuditFields();
-  // No updates or deletes — append-only
+  // No updates or deletes â€” append-only
   allow update, delete: if false;
 }
 ```
@@ -969,13 +971,13 @@ match /activity_logs/{logId} {
 | **Doc 3 (API Workflows)** | Update relevant CFs to write activity logs |
 | **Doc 5 (Security Rules)** | Add `activity_logs` rules |
 | **Doc 16 (UI Screens)** | Add ActivityLogScreen; add row to SettingsScreen |
-| **Doc 0 (Handoff Guardrails)** | Add to Phase 7 build sequence |
+| **Doc 25 (Build Phase Breakdown)** | Included in Phase 6 |
 
 ---
 
 ## 12. Configurable Dashboard Cards
 
-**Priority:** P3 — Nice to have. Some users don't want all metrics visible.
+**Priority:** P3 â€” Nice to have. Some users don't want all metrics visible.
 **Phase:** Phase 2+
 
 ### 12.1 Approach
@@ -992,7 +994,7 @@ dashboard_cards (Map):
   response_rate (Boolean): false  // hidden by default
 ```
 
-**UI:** In SettingsScreen → "Dashboard Preferences" → toggle switches for each card.
+**UI:** In SettingsScreen â†’ "Dashboard Preferences" â†’ toggle switches for each card.
 
 **Implementation:** The `<DashboardSummaryCard />` component reads these preferences and only renders visible cards.
 
@@ -1007,13 +1009,13 @@ dashboard_cards (Map):
 
 ## 13. Session Management
 
-**Priority:** P3 — Future feature. Not critical for MVP.
+**Priority:** P3 â€” Future feature. Not critical for MVP.
 **Phase:** Phase 2+
 
 ### 13.1 Features
 
 * View all active sessions across devices (from `login_history`).
-* "Sign out all other devices" — revoke Firebase refresh tokens: `admin.auth().revokeRefreshTokens(uid)`.
+* "Sign out all other devices" â€” revoke Firebase refresh tokens: `admin.auth().revokeRefreshTokens(uid)`.
 * Auto-logout after inactivity (configurable per tenant).
   * Add `config.session_timeout_minutes` to `tenants` (default: `null` = no timeout).
   * React side: `useIdle` hook (or `useEffect` on mouse/key events) that monitors user activity, logs out after threshold.
@@ -1034,24 +1036,24 @@ dashboard_cards (Map):
 |-------|--------|-------|
 | `/profile` | ProfileScreen | Phase 0 |
 | `/notifications` | NotificationsScreen | Phase 3 |
-| `/settings/archived-leads` | ArchivedLeadsScreen | Phase 1 |
-| `/settings/activity-log` | ActivityLogScreen | Phase 7 |
+| `/settings/archived-leads` | ArchivedLeadsScreen | Phase 2 |
+| `/settings/activity-log` | ActivityLogScreen | Phase 6 |
 
 ## Summary: New Collections Added
 
 | Collection | Purpose | Phase |
 |-----------|---------|-------|
-| `login_history` | Authentication audit trail | Phase 7 |
+| `login_history` | Authentication audit trail | Phase 6 |
 | `notifications` | In-app notification feed | Phase 3 |
-| `activity_logs` | Tenant-scoped action audit | Phase 7 |
+| `activity_logs` | Tenant-scoped action audit | Phase 6 |
 
 ## Summary: New Cloud Functions Added
 
 | Function | Purpose | Phase |
 |----------|---------|-------|
 | `updateUserProfile` | User self-edits profile | Phase 0 |
-| `logLoginEvent` | Record login events | Phase 7 |
-| `updateUserPermissions` | Admin edits team permissions | Phase 6 |
+| `logLoginEvent` | Record login events | Phase 6 |
+| `updateUserPermissions` | Admin edits team permissions | Phase 5 |
 
 ## Summary: New Firestore Indexes Added
 
@@ -1067,7 +1069,7 @@ dashboard_cards (Map):
 
 | Package (npm) | Purpose | Phase |
 |---------------|---------|-------|
-| `papaparse` | CSV export | Phase 1 |
+| `papaparse` | CSV export | Phase 2 |
 | `xlsx` (SheetJS) | XLSX export (Phase 2) | Phase 2 |
 
 ---
@@ -1078,8 +1080,8 @@ This is the master list of changes needed in existing documents due to this spec
 
 | Document | Changes |
 |----------|---------|
-| **Doc 0 (Handoff Guardrails)** | Add B12 Audit Fields pattern; add Phase 0 steps (0.3.1 Profile, forgot password); add Phase 1 steps (1.6 Export, 1.4.1 Dashboard, search); update Phase 3 (notifications); update Phase 6 (permissions); update Phase 7 (login history, activity logs) |
-| **Doc 2 (Data Schema)** | Add 4 audit fields to ALL collections; add `avatar_url`, `auth_provider`, `last_login_at`, `permissions` to `users`; add `search_name`, `is_archived`, `archived_at`, `archived_by` to `leads`; add 3 new collections (`login_history`, `notifications`, `activity_logs`); add 5 new indexes (#17–#21) |
+| **Doc 0 (Handoff Guardrails)** | B12 Audit Fields pattern added. Build sequence now delegated to `25_Build_Phase_Breakdown.md`. |
+| **Doc 2 (Data Schema)** | Add 4 audit fields to ALL collections; add `avatar_url`, `auth_provider`, `last_login_at`, `permissions` to `users`; add `search_name`, `is_archived`, `archived_at`, `archived_by` to `leads`; add 3 new collections (`login_history`, `notifications`, `activity_logs`); add 5 new indexes (#17â€“#21) |
 | **Doc 3 (API Workflows)** | Add `updateUserProfile`, `logLoginEvent`, `updateUserPermissions` CFs; update ALL existing CFs to set audit fields; update `handleInboundMessage`, `aiReply`, `sendWhatsapp`, cron CFs to create notifications |
 | **Doc 5 (Security Rules)** | Add `hasAuditFieldsOnUpdate()` and `hasAuditFieldsOnCreate()` helpers; add rules for `login_history`, `notifications`, `activity_logs`; add archive fields to allowed lead update fields |
 | **Doc 6 (Project Structure)** | Add `utils/csvExporter.ts`; note ProfilePage location |

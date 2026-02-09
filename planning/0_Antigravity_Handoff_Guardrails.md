@@ -1,6 +1,6 @@
-# Antigravity Handoff Guardrails — CoCRM v1
+# Antigravity Handoff Guardrails â€” CoCRM v1
 
-> **This file is law.** Every planning doc opens with "Implementation must comply with `0_Antigravity_Handoff_Guardrails.md` (non-negotiable)." If a rule here conflicts with anything in Docs 1–16, this file wins.
+> **This file is law.** Every planning doc opens with "Implementation must comply with `0_Antigravity_Handoff_Guardrails.md` (non-negotiable)." If a rule here conflicts with anything in Docs 1â€“16, this file wins.
 
 ---
 
@@ -14,36 +14,36 @@ Build an **AI Personal Sales Assistant for small business owners in India** (stu
 
 **3 tabs only:**
 
-1. **Find Leads (Hunter):** Google Maps search → Apify enrichment → AI tags Hot/Warm/Cold → list ready to contact. Default pipeline view: **New → Contacted → Responded → Booked → Won/Lost** (only these 5 shown in UI).
+1. **Find Leads (Hunter):** Google Maps search â†’ Apify enrichment â†’ AI tags Hot/Warm/Cold â†’ list ready to contact. Default pipeline view: **New â†’ Contacted â†’ Responded â†’ Booked â†’ Won/Lost** (only these 5 shown in UI).
 2. **Messages (WhatsApp only in MVP):** template send + reply drafts + guardrails (no hallucinated pricing). Email/SMS are Phase 2.
 3. **Tasks:** simple follow-ups list driven by `next_follow_up_at`.
 
-**Phase 2 items — do NOT implement:**
+**Phase 2 items â€” do NOT implement:**
 Account deletion workflow, deep link config files (assetlinks.json / apple-app-site-association), email/SMS channels, discount/promotions module, CI/CD pipeline, trend charts in admin dashboard, `priority_rank` integer field.
 
 ### A3. Critical "SMB Safety" Rules (Non-Negotiable)
 
 * **MVP AI does not auto-send.** For inbound messages, AI generates **draft_reply only**, user must approve.
 * **Opt-out compliance:** if lead `opt_in_status == "opted_out"`, block ALL future outbound. Safety layer must output `BLOCKED: opted_out`.
-* **Quiet hours:** messages are queued (not sent) between 9 PM–9 AM in the **tenant's configured timezone** (`config.timezone`).
+* **Quiet hours:** messages are queued (not sent) between 9 PMâ€“9 AM in the **tenant's configured timezone** (`config.timezone`).
 * **Daily cap:** enforce `usage_current.whatsapp_sent_today` against `usage_limits.max_whatsapp_msgs_daily`.
 * **Never invent prices/offers:** replies must only quote from Products catalog / brochure PDF context.
 
 ### A4. Billing & Money Correctness (Must Be Atomic)
 
-* **`credits_balance` is in paisa** (e.g., 50000 = ₹500). ALL deductions in paisa.
+* **`credits_balance` is in paisa** (e.g., 50000 = â‚¹500). ALL deductions in paisa.
 * **Discovery (Google Maps):** free, quota-limited (not credits).
-* **WhatsApp send:** Marketing = 80 paisa, Utility = 30 paisa. If `balance < cost` → throw error, else atomic deduct + ledger entry + interaction log.
+* **WhatsApp send:** Marketing = 80 paisa, Utility = 30 paisa. If `balance < cost` â†’ throw error, else atomic deduct + ledger entry + interaction log.
 * **Apify enrichment:** 50 paisa/lead. Same atomic pattern.
-* **Immutable ledger:** every deduction/top-up MUST create `credit_transactions` record with `status: "confirmed"`. Only `sendWhatsapp` uses the reserve→confirm/refund lifecycle.
-* **`sendWhatsapp` uses 3-phase flow:** Phase 1 (Transaction: validate + reserve credits) → Phase 2 (External: messagingProvider.sendWhatsAppTemplate() call OUTSIDE transaction) → Phase 3a/3b (Batch write: confirm or refund). **NEVER put external HTTP calls inside a Firestore transaction.**
+* **Immutable ledger:** every deduction/top-up MUST create `credit_transactions` record with `status: "confirmed"`. Only `sendWhatsapp` uses the reserveâ†’confirm/refund lifecycle.
+* **`sendWhatsapp` uses 3-phase flow:** Phase 1 (Transaction: validate + reserve credits) â†’ Phase 2 (External: messagingProvider.sendWhatsAppTemplate() call OUTSIDE transaction) â†’ Phase 3a/3b (Batch write: confirm or refund). **NEVER put external HTTP calls inside a Firestore transaction.**
 * **Messaging Provider Abstraction:** All outbound communication (WhatsApp, SMS, Email) goes through the IMessagingProvider interface. Cloud Functions NEVER call MSG91/Meta/Twilio APIs directly.
 
 ### A5. Multi-Tenancy & Security (Must Not Regress)
 
 * Every document has `tenant_id` (except `system_config`, `system_config_public`).
 * ALL callable functions validate `context.auth.token.tenant_id` matches target resource. **Never trust client-supplied tenant_id.**
-* Firestore security rules — these are final, do not loosen:
+* Firestore security rules â€” these are final, do not loosen:
     * `credit_transactions` write = **false** (server-only)
     * `system_logs` direct create = **false** (server-only via `logError` CF)
     * `users` write = **super_admin only** (tenant admin cannot write arbitrary user docs)
@@ -67,7 +67,7 @@ Account deletion workflow, deep link config files (assetlinks.json / apple-app-s
 | **Max lines per React Component** | **250 lines** | Keeps UI manageable. If approaching, extract sub-components. |
 | **Max lines per TypeScript hook/logic** | **400 lines** | Complex logic (like billing) can be denser. |
 | **Max Cloud Functions per trigger file** | **4 functions** | Split `https.ts` into `https_leads.ts`, `https_billing.ts` etc. |
-| **One exported function per service method** | — | `billingService.ts` exports `reserveCredits`, `confirmCredits` — not one giant class. |
+| **One exported function per service method** | â€” | `billingService.ts` exports `reserveCredits`, `confirmCredits` â€” not one giant class. |
 
 **Splitting rules:**
 * If a screen has >3 sections, extract each: `LeadBusinessCard.tsx`, `LeadContactCard.tsx`, `LeadTimeline.tsx`.
@@ -77,21 +77,21 @@ Account deletion workflow, deep link config files (assetlinks.json / apple-app-s
 
 **React (TypeScript):**
 ```
-Components:   PascalCase.tsx            → LeadCard.tsx
-Hooks:        camelCase.ts              → useLeads.ts
-Utilities:    camelCase.ts              → formatDate.ts
-Types:        PascalCase.ts             → Lead.ts
-Functions:    camelCase                 → handleSubmit
-Variables:    camelCase                 → creditsBalance
-Constants:    SCREAMING_SNAKE_CASE      → MAX_LEADS_PER_PAGE
+Components:   PascalCase.tsx            â†’ LeadCard.tsx
+Hooks:        camelCase.ts              â†’ useLeads.ts
+Utilities:    camelCase.ts              â†’ formatDate.ts
+Types:        PascalCase.ts             â†’ Lead.ts
+Functions:    camelCase                 â†’ handleSubmit
+Variables:    camelCase                 â†’ creditsBalance
+Constants:    SCREAMING_SNAKE_CASE      â†’ MAX_LEADS_PER_PAGE
 ```
 
 **Cloud Functions (TypeScript):**
 ```
-Files:        camelCase.ts              → billingService.ts
-Functions:    camelCase                 → handleRazorpayWebhook
-Exports:      camelCase                 → exports.discoverLeads
-Interfaces:   PascalCase + I prefix     → IDiscoverLeadsInput
+Files:        camelCase.ts              â†’ billingService.ts
+Functions:    camelCase                 â†’ handleRazorpayWebhook
+Exports:      camelCase                 â†’ exports.discoverLeads
+Interfaces:   PascalCase + I prefix     â†’ IDiscoverLeadsInput
 ```
 
 **Firestore field names:** Always `snake_case`. Never camelCase in Firestore.
@@ -102,17 +102,17 @@ Every feature in `apps/web/src/features/{feature}/` MUST have this structure:
 
 ```
 features/leads/
-├── api/
-│   ├── leadsApi.ts                 # Firestore queries (getLeads, updateLead)
-│   └── useLeads.ts                 # React Query hooks
-├── components/
-│   ├── LeadListScreen.tsx          # Main Page
-│   ├── LeadCard.tsx                # Sub-component
-│   └── LeadFilterDialog.tsx
-├── hooks/
-│   └── useLeadStats.ts             # Feature-specific logic
-└── types/
-    └── index.ts                    # Feature-specific types
+â”œâ”€â”€ api/
+â”‚   â”œâ”€â”€ leadsApi.ts                 # Firestore queries (getLeads, updateLead)
+â”‚   â””â”€â”€ useLeads.ts                 # React Query hooks
+â”œâ”€â”€ components/
+â”‚   â”œâ”€â”€ LeadListScreen.tsx          # Main Page
+â”‚   â”œâ”€â”€ LeadCard.tsx                # Sub-component
+â”‚   â””â”€â”€ LeadFilterDialog.tsx
+â”œâ”€â”€ hooks/
+â”‚   â””â”€â”€ useLeadStats.ts             # Feature-specific logic
+â””â”€â”€ types/
+    â””â”€â”€ index.ts                    # Feature-specific types
 ```
 
 **Hard rules:**
@@ -122,7 +122,7 @@ features/leads/
 
 ### B4. Cloud Functions Structure (Mandatory)
 
-Follow `6_Project_Structure.md` §5 exactly. Includes: `config/`, `providers/`, `triggers/`, `services/`, `utils/`, `types/`.
+Follow `6_Project_Structure.md` Â§5 exactly. Includes: `config/`, `providers/`, `triggers/`, `services/`, `utils/`, `types/`.
 
 **Hard rules:**
 * Trigger files are THIN.
@@ -135,7 +135,7 @@ Follow `6_Project_Structure.md` §5 exactly. Includes: `config/`, `providers/`, 
 **Use these patterns:**
 
 ```typescript
-// ✅ CORRECT: Custom Hook wrapping React Query
+// âœ… CORRECT: Custom Hook wrapping React Query
 export const useLeads = (filters: LeadFilters) => {
   const { tenant } = useTenant();
   return useQuery({
@@ -145,7 +145,7 @@ export const useLeads = (filters: LeadFilters) => {
   });
 };
 
-// ✅ CORRECT: Async State in UI
+// âœ… CORRECT: Async State in UI
 const { data: leads, isLoading, error } = useLeads(filters);
 
 if (isLoading) return <Skeleton className="h-20" />;
@@ -157,10 +157,10 @@ return <LeadList leads={leads} />;
 
 **Forbidden patterns:**
 ```typescript
-// ❌ NEVER: useEffect for data fetching
+// âŒ NEVER: useEffect for data fetching
 useEffect(() => { fetchLeads().then(setLeads) }, []);
 
-// ❌ NEVER: Direct Firestore in Component
+// âŒ NEVER: Direct Firestore in Component
 const snapshot = await getDocs(collection(db, 'leads'));
 ```
 
@@ -213,7 +213,7 @@ export interface Lead {
 throw new HttpsError('failed-precondition', 'Insufficient credits.');
 ```
 
-**React Client — use shared error mapper:**
+**React Client â€” use shared error mapper:**
 ```typescript
 // In Mutation
 onError: (error) => {
@@ -262,21 +262,7 @@ No hard deletes. Use `is_archived: true`.
 
 ## PART C: BUILD SEQUENCE
 
-### Phase 0: Scaffold
-0.1 Firebase Setup (Dev)
-0.2 React + Vite + Router Setup
-0.3 Auth Flow (Clerk/Firebase)
-0.4 Custom Claims
-0.5 Route Guards
-0.6 Shared Components (UI Library)
-
-### Phase 1: Core Data
-1.1 Lead Types & API
-1.2 useLeads Hooks
-1.3 Lead List & Detail Screens
-1.4 Cloud Functions (Discover/Enrich)
-
-[... Remaining Phases follow similar logic mapped to React components ...]
+See `25_Build_Phase_Breakdown.md` for the authoritative build sequence, phase definitions, acceptance criteria, and dependency graph.
 
 ---
 
